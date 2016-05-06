@@ -1,0 +1,17 @@
+<md-dialog id="{{name}}" md-theme="{{ theme }}" aria-label="Card Tutorial">    
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+          <h2>Card Tutorial</h2>
+          <span flex></span>
+          <md-button class="md-icon-button" ng-click="hideDialog();" >
+            X
+          </md-button>
+        </div>
+      </md-toolbar>
+    <md-dialog-content role="document" tabIndex="-1">
+        <video id="video-tutorial-id" class="video-js vjs-default-skin " controls preload="auto" width="100%" data-setup="{}" height="100%">
+           <!--  <source src="//cdn.cardkit.io.s3.amazonaws.com/video/1:HomepageVid_V2.mp4" > -->
+           <source src="{{vlink}}" >
+        </video>
+    </md-dialog-content>
+</md-dialog>

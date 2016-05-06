@@ -1,0 +1,64 @@
+<div class="container">
+
+	<h4>Edit order</h4>
+
+	<form name="editOrderForm" novalidate>
+	<div class="row">
+
+		<div class="col-md-6">
+			<label for="orderName">Order name:</label>
+			<input type="text" id="orderName" class="form-control" ng-model="orderD.tempOrder.name"/>
+		</div>
+
+		<div class="col-md-6">
+			<label for="editClient">Client name:</label>
+			<select ng-if="orderD.clients.length" name="clients" id="editClient" data-ng-model="orderD.tempOrder.client" class="form-control"
+				ng-options="client as client.companyName for client in orderD.clients"><option value="">Select client</option></select>
+		</div>
+
+	</div>
+
+	<div class="row">
+
+		<div class="col-md-6">
+			<label for="orderDate">Order date</label>
+			<p class="input-group">
+				<input type="text"
+				       id="orderDate"
+				       class="form-control"
+				       datepicker-popup="{{ format }}"
+				       ng-model="orderD.tempOrder.orderDate"
+				       is-open="datePickers.orderDate"
+				       ng-click="order.orderDate.open = true"
+				       close-text="Close"/>
+					<span class="input-group-btn">
+						<button type="button" class="btn btn-default" ng-click="open($event,'orderDate')"><i class="fui-calendar"></i></button>
+					</span>
+			</p>
+		</div>
+		<div class="col-md-6">
+			<label for="dueDate">Due date</label>
+			<p class="input-group">
+				<input type="text"
+				       id="dueDate"
+				       class="form-control"
+				       datepicker-popup="{{ format }}"
+				       ng-model="orderD.tempOrder.dueDate"
+				       is-open="datePickers.dueDate"
+				       ng-click="order.dueDate.open = true"
+				       close-text="Close"/>
+					<span class="input-group-btn">
+						<button type="button" class="btn btn-default" ng-click="open($event,'dueDate')"><i class="fui-calendar"></i></button>
+					</span>
+			</p>
+		</div>
+	</div>
+		<hr/>
+		<div class="row">
+			<button class="btn btn-success pull-right" ng-click="orderD.updateOrder(orderD.tempOrder, editOrderForm)"><i class="fa fa-floppy-o"></i>&nbsp&nbspUpdate changes</button>
+			<button class="btn btn-primary pull-right" ui-sref="addCards({orderId:orderD.tempOrder._id})" style="margin: 0 20px;"><i class="fa fa-newspaper-o"></i>&nbsp&nbspManage cards</button>
+			<button class="btn btn-primary pull-right" ui-sref="orders"><i class="fa fa-reply"></i>&nbsp&nbspBack to order overview</button>
+		</div>
+	</form>
+
+</div>

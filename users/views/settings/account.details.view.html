@@ -1,0 +1,95 @@
+<div class="container">
+	<h3>{{ account.user.firstName }}'s account details</h3>
+	<hr/>
+
+	<form name="accountDetailForm" novalidate class="form-horizontal">
+		<div class="form-group">
+
+			<div class="row">
+				<div class="col-md-6">
+					<div class="row" style="padding-bottom: 20px;">
+						<label for="firstName" class="col-sm-3 control-label">First name:</label>
+						<div class="col-sm-9">
+							<input class="form-control" type="text" ng-model="account.tempUser.firstName" id="firstName"/>
+						</div>
+					</div>
+					<div class="row" style="padding-bottom: 20px;">
+						<label for="lastName" class="col-sm-3 control-label">Last name:</label>
+						<div class="col-sm-9">
+							<input class="form-control" type="text" ng-model="account.tempUser.lastName" id="lastName"/>
+						</div>
+					</div>
+					<div class="row" style="padding-bottom: 20px;">
+						<label for="email" class="col-sm-3 control-label">E-mail:</label>
+						<div class="col-sm-9">
+							<input class="form-control" type="email" ng-model="account.tempUser.email" id="email"/>
+						</div>
+					</div>
+
+					<div class="row" style="padding-bottom: 20px;" ng-if="account.user.role==='client'">
+						<label for="editClient" class="col-sm-3 control-label">Client name(s):</label>
+						<div class="col-sm-9">
+							<select bs-multiselect="{ nonSelectedText: 'Select client' }" ng-if="account.clients.length" name="clients" id="editClient" data-ng-model="account.tempUser.clients" multiple="multiple" class="width100"
+                                                            ng-options="client as client.companyName for client in account.clients | orderBy:'companyName'">
+							</select>
+						</div>
+					</div>
+
+				</div>
+				<div class="col-md-6">
+
+					<div class="row" style="padding-bottom: 20px;">
+						<label for="username" class="col-sm-3 control-label">Username:</label>
+						<div class="col-sm-9">
+							<input class="form-control" type="text" ng-model="account.tempUser.username" id="username"/>
+						</div>
+					</div>
+
+					<div class="row" style="padding-bottom: 20px;" ng-if="account.tempUser.role">
+						<label for="role" class="col-sm-3 control-label">Role:</label>
+						<div class="col-sm-9">
+							<select name="role" class="form-control" id="role" data-ng-model="account.tempUser.role" ng-options="role for role in account.allRoles" data-ng-change="account.assignPermissions()"></select>
+						</div>
+					</div>
+
+					<div class="row" style="padding-bottom: 20px;">
+						<label for="permissions" class="col-sm-3 control-label">Permissions:</label>
+						<div class="col-sm-9">
+							<multiselect id="permissions" checkboxes="true" multiple="true" ng-model="account.tempUser.permissions" options="permission for permission in account.allPermissions"></multiselect>
+						</div>
+					</div>
+
+				</div>
+			</div>
+			<hr/>
+			<div class="row pull-right">
+				<button ui-sref="admin" class="btn btn-danger">Back to admin overview</button>
+				<button class="btn btn-primary" ng-click="account.updateAccount()" style="margin: 0 20px;" ng-disabled="!accountDetailForm.$dirty">save changes</button>
+			</div>
+		</div>
+
+		<h3>Manage {{ account.user.firstName }}'s cards</h3>
+		<table class="table table-bordered table-condensed">
+			<thead>
+			<tr>
+				<th>Name</th>
+				<th>Client</th>
+				<th>Action</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr ng-if="account.allUserCards" ng-repeat="card in account.allUserCards">
+				<td>{{card.name}}</td>
+				<td>{{card.client}}</td>
+				<td>
+					<button class="btn btn-success" ui-sref="editCard({cardId:card._id})">Edit</button>
+					<button class="btn btn-danger" ng-click="account.removeClaim(card)">Remove</button>
+				</td>
+			</tr>
+			<tr><td colspan="3"><p ng-if="!account.allUserCards.length">{{ account.user.firstName }} dont have claimed cards</p></td></tr>
+			</tbody>
+		</table>
+
+
+	</form>
+</div>

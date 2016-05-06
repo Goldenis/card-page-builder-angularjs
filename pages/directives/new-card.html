@@ -1,0 +1,43 @@
+<div class="controls_wrapper" ng-class="{ open: open }">
+    <md-fab-speed-dial md-open="open" md-direction="down" class="md-fling" style="opacity: 0.4"
+                       ng-class="{'opacityOnHover':hovered}" ng-mouseenter="hovered=true;" ng-mouseleave="hovered=false;">
+        <md-fab-trigger>
+            <md-button aria-label="menu" class="md-fab md-warn">
+                <ng-md-icon icon="menu"></ng-md-icon>
+            </md-button>
+        </md-fab-trigger>
+        <md-fab-actions>
+            <md-button aria-label="Edit Settings" class="md-fab md-raised md-mini" ng-click="csopen = !csopen; open = !open; setActiveCard()">
+                <i class="fa fa-cog ng-scope"></i>
+                <md-tooltip md-direction="right">
+                    Edit Settings
+                </md-tooltip>
+            </md-button>
+            <!-- note: sortable.ui can't handle button, so href added to render as link -->
+            <md-button href aria-label="Move Card" class="md-fab md-raised md-mini myAngularHandle">
+                <i class="fa fa-arrows ng-scope" class="myAngularHandle"></i>
+                <md-tooltip md-direction="right">
+                    Move Card
+                </md-tooltip>
+            </md-button>
+            <md-button aria-label="Duplicate Card" class="md-fab md-raised md-mini" ng-click="openDuplicateModal()">
+                <i class="fa fa-files-o ng-scope"></i>
+                <md-tooltip md-direction="right">
+                    Duplicate Card
+                </md-tooltip>
+            </md-button>
+            <md-button aria-label="Remove Card" class="md-fab md-raised md-mini" ng-click="openDeleteModal()">
+                <i class="fa fa-times ng-scope"></i>
+                <md-tooltip md-direction="right">
+                    Remove Card
+                </md-tooltip>
+            </md-button>
+        </md-fab-actions>
+    </md-fab-speed-dial>
+</div>
+
+<custom-modal title="'Delete card confirmation'" text="'Are you sure you want to delete this card?'"
+              bg="'indianred'" name="'deleteCardModal'" button="'Delete Card'" action="removeCard()"></custom-modal>
+
+<custom-modal title="'Duplicate card confirmation'" text="'Are you sure you want to duplicate this card?'"
+              name="'duplicateCardModal'" button="'Duplicate Card'" action="duplicateCard()"></custom-modal>

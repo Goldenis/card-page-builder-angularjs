@@ -1,0 +1,70 @@
+<form id="editPost" name="PostForm" ng-submit="vm.editPost && vm.savePost(vm.editPost)" novalidate flex autocomplete="off" class="md">
+    <div class="post-details toggle-slide" ng-if="vm.post" layout="column" layout-padding flex>
+        <div class="toolbar" layout="row">
+            <div flex></div>
+            <md-button type="button" class="md-icon-button" ng-click="vm.edit(vm.post)" ng-if="!vm.editPost" aria-label="Edit post">
+                <ng-md-icon icon="edit" size="25"></ng-md-icon>
+            </md-button>
+            <md-button type="button" class="md-icon-button" ng-click="vm.cancel(vm.editPost)" aria-label="Close post">
+                <ng-md-icon icon="close" size="25"></ng-md-icon>
+            </md-button>
+        </div>
+        <md-content flex>
+            <fieldset ng-autofocus="vm.editPost" ng-class="vm.editPost ? 'edit' : 'read'">
+                <div class="form-group" layout="row">
+                    <label>Title</label>
+                    <h2 ng-if="!vm.editPost">{{vm.post.title}}</h2>
+                    <input name="title" ng-if="vm.editPost" type="text" ng-model="vm.editPost.title" class="h2 inline">
+                </div>
+                <div class="form-group" layout="row" ng-if="vm.clients.length != 1">
+                    <label>Client</label>
+                    <div ng-if="!vm.editPost">{{(vm.post.client || {}).companyName || 'None'}}</div>
+                    <md-select ng-if="vm.editPost" ng-model="vm.editPost.client" aria-label="Select client">
+                        <md-option ng-repeat="client in vm.clients | orderBy:'companyName'" ng-value="client._id">{{client.companyName}}</md-option>
+                    </md-select>
+                    <div class="error" ng-if="vm.error.client">{{vm.error.client}}</div>
+                </div>
+                <div class="form-group" layout="row">
+                    <label>Content</label>
+                    <div ng-if="!vm.editPost" class="content" ng-bind-html="vm.decodeEditablde(vm.post.content)"></div>
+                    <div class="editable content inline" name="content" ng-if="vm.editPost" medium-editor-model ng-model="vm.editPost.content"></div>
+                </div>
+                <div class="form-group" layout="row" ng-if="!vm.editPost">
+                    <label>Featured Img</label>
+                    <img src="{{vm.post.featuredImage.url}}">
+                    <span ng-if="!vm.post.featuredImage.url">None</span>
+                </div>
+                <div class="form-group" layout="row" ng-if="vm.editPost">
+                    <label>Featured Img</label>
+
+                    <div class="image-container">
+                        <div ng-if="vm.editPost.featuredImage.url"><img src="{{vm.editPost.featuredImage.url}}"></div>
+
+                        <div class="progressSideBar progress" ng-if="uploadProgress != null">
+                            <div class="progress-bar" role="progressbar" aria-valuenow="{{ uploadProgress }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ uploadProgress || 0 }}%;">
+                                <span ng-show="uploadProgress<100">{{ uploadProgress == 0 ? "" : uploadProgress +"%"}}</span>
+                                <span ng-show="uploadProgress===100">Completed</span>
+                            </div>
+                        </div>
+
+                        <form-nested class="fileUploadForm" layout="row">
+                            <button ng-click="vm.deletePostImage(vm.editPost, $event)" class="btn btn-danger" ng-disabled="!vm.editPost.featuredImage.url">
+                                <i class="fa fa-trash-o"></i>
+                            </button>
+                            <button class="btn btn-success" flex>
+                                <i ng-hide="vm.editPost.featuredImage.url" class="fa fa-file-image-o"></i><span ng-hide="vm.editPost.featuredImage.url">Upload Image</span>
+                                <i ng-show="vm.editPost.featuredImage.url" class="fa fa-cog"></i><span ng-show="vm.editPost.featuredImage.url">Change Image</span>
+                                <input name="featuredImage" type="file" class="fileUploadSideBar" onchange="angular.element(this).scope().vm.uploadPostImage(this.files[0])">
+                            </button>
+                        </form-nested>
+                    </div>
+                </div>
+                <div class="form-group" layout="row">
+                    <label>Excerpt</label>
+                    <div ng-if="!vm.editPost" class="content">{{vm.post.excerpt}}</div>
+                    <textarea name="excerpt" ng-if="vm.editPost" ng-model="vm.editPost.excerpt" class="inline" rows="4"></textarea>
+                </div>
+            </fieldset>
+        </md-content>
+    </div>
+</form>

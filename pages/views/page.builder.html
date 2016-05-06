@@ -1,0 +1,119 @@
+<div id="pageBuilder" class="md">
+    <ck-menu-toolbar ng-init="replaceLayoutHeader()" auto-hide="true">
+        <div class="dirty-toolbar">
+            <md-button class="save" ng-click="saveChanges()" ng-disabled="!isPageDirty">Save</md-button>
+            <md-button class="save" ng-click="saveChangesAndClose()" ng-disabled="!isPageDirty">Save and Close</md-button>
+            <md-button class="discard" ng-click="discardChanges()" ng-disabled="!isPageDirty">Discard Changes</md-button>
+        </div>
+    </ck-menu-toolbar>
+
+    <div id="leftStick" ng-click="introduction = false">
+        <button  ng-click="openPageSettings($event, page || newPage);" class="md-icon-button">
+            <md-tooltip md-direction="right" md-visible="introduction" md-delay="10000000">Start by naming your page</md-tooltip>
+            <h5><i class="fa fa-cogs"></i>Page Settings</h5>
+        </button>
+
+        <button  ng-click="toggleCards();" class="md-icon-button">
+            <md-tooltip md-direction="right" md-visible="introduction" md-delay="10000000">Add cards to your page here</md-tooltip>
+            <h5><i class="fa fa-plus-square"></i>Cards</h5>
+        </button>
+    </div>
+
+    <md-sidenav id="cardLibrary" md-is-open="cardLibraryOpened" class="md-sidenav-left md-whiteframe-z2 editCard optionsMenu" md-component-id="cardLibrary">
+        <md-toolbar class="md-theme-indigo">
+            <h1 class="md-toolbar-tools">
+                <md-button class="md-icon-button" ng-click="toggleCards()">
+                    <ng-md-icon icon="close"></ng-md-icon>
+                </md-button>
+                Cards
+            </h1>
+        </md-toolbar>
+
+        <md-list layout-padding="" class="groupSwitch" ng-show="allCards.length || !lazyLoading">
+            <div ui-sortable="sortableOptions" class="sortable screen floatleft first" ng-model="sourceScreens">
+                <md-list-item ng-repeat="card in sourceScreens track by $index">
+                    <div class="card-item">
+                        <span>{{card.name}}</span><br/>
+                        <img ng-src="{{ card.displayImage }}" class="card-thumb">
+                    </div>
+                </md-list-item>
+            </div>
+        </md-list>
+
+        <div ng-hide="allCards.length || !lazyLoading" style="margin: 10px;">
+            Loading cards...
+        </div>
+    </md-sidenav>
+
+    <md-content id="body" flex layout-padding class="md-default-theme page-body">
+        <div class="body_wrapper" layout="column" layout-fill layout-align="top center" style="width: 98%">
+            <md-sidenav id="cardSettings" md-is-open="csopen">
+                <h1 class="md-toolbar-tools">
+                    <md-button class="md-icon-button" ng-click="toggleCardSettings()">
+                        <ng-md-icon icon="close"></ng-md-icon>
+                    </md-button>
+                    <div>{{selectedCard.name}}</div>
+                </h1>
+
+                <ul id="cardOptions">
+                    <div sidebar="" cards="sourceScreens" pages="pagesList"></div>
+                </ul>
+            </md-sidenav>
+
+            <div id="clientHeader"></div>
+            <style>
+                a[href=""]:not(.md-button):not([ng-click]):not([data-ng-click]),a[href="#_blank"],a[href="#_self"],a[href^="{{"],a[href="javascript:void(0)"] { pointer-events: none; }
+                a .editable { pointer-events: auto; }
+            </style>
+
+            <md-whiteframe class="md-whiteframe-z1 page content" ng-class="{ open: pageSettingsOpened || cardLibraryOpened || csopen }" layout layout-align="start start">
+                <div id="cardsLoadingOverlay" class="busy-overlay" ng-class="{loadingDone : loadingDone}">
+                    <h4 class="progress-label">Loading...</h4>
+                    <md-progress-linear class="md-warn" md-mode="determinate" value="{{loadingProgress}}"></md-progress-linear>
+                    <h3 ng-if="loadingError" style="padding-top:30px; color:red;">{{loadingError}}</h3>
+                </div>
+
+                <!-- at least 1 editable required for medium editor setup code -->
+                <div class="editable hidden"></div>
+
+                <!--{{ newPage.cards[0].html }}-->
+                <div ui-sortable="sortableOptions1" id="sortable2" class="apps-container connected-apps-container screen"
+                     data-ng-model="newPage.cards" data-client-name="{{selectedClient.companyName}}">
+
+                    <div ng-repeat="card in newPage.cards">
+                        <md-whiteframe class="md-whiteframe-z1 card-container" layout layout-align="start start"
+                                       new-card card="card" index="{{$index}}" rendered="loadingCompleted(card)" delay="{{$index >= 2 ? $index * 200 : 0}}">
+                        </md-whiteframe>
+                    </div>
+                </div>
+
+                <div style="clear: both;"></div>
+
+                <!-- <ul id="export_sortable2" class="connectedSortable" ng-cloak>
+                </ul> -->
+
+                <p class="selectedText"></p>
+
+                <div id="clientFooter"></div>
+            </md-whiteframe>
+        </div>
+    </md-content>
+
+    <!-- <custom-modal title="'Delete card confirmation'" text="'Are you sure you want to delete this card?'" bg="'indianred'" name="'deleteCardModal'" button="'Delete Card'" action="removeCard()"></custom-modal>
+     -->
+    <custom-modal 
+        title="''"
+        text="'Are you sure you want to leave this page?'" bg="'#EF4481'"
+        name="'leavePageModal'" button="'Leave'" action="leavePage()">
+    </custom-modal>
+
+    <custom-modal 
+        title="'Discard changes?'"
+        text="'Are you sure you want to discard changes? All unsaved changes will be lost.'" bg="'#EF4481'"
+        name="'discardPageModal'"
+        button="'Discard'"
+        action="discardChanges(true)">
+    </custom-modal>
+
+    <progress-modal title="newPage.name || page.name" name="'progressModal'" track="savingPageProgress"></progress-modal>
+</div>

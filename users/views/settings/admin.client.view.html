@@ -1,0 +1,98 @@
+<section class="row">
+	<h3 class="col-md-12 text-center">Admin</h3>
+	<div class="container">
+
+		<button ng-if="admin.authentication.user.role=='admin'" ng-click="admin.openNewUserModal()" class="btn btn-primary">Create new user</button>
+
+		<table class="table table-striped ">
+			<thead>
+			<tr>
+				<th>No.</th>
+				<th>First Name</th>
+				<th>Last Name</th>
+				<th>Password</th>
+				<th>Role</th>
+				<th>Permissions</th>
+				<th>Actions</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr ng-repeat="user in admin.users" ng-mouseenter="hover = true" ng-mouseleave="hover = false" ng-class="{'row-hover':hover}">
+				<td>{{$index+1}}</td>
+				<td>{{user.firstName}}</td>
+				<td>{{user.lastName}}</td>
+				<td><a ng-click="admin.openPasswordModal(user)" style="cursor: pointer">change</a></td>
+				<td><select style="cursor: pointer" name="role" data-ng-model="user.role" ng-options="role for role in admin.allRoles" data-ng-change="admin.assignPermissions(user, user.role)"></select></td>
+				<td><multiselect name="permissions" checkboxes="true" multiple="true" ng-model="user.permissions" options="permission for permission in admin.allPermissions" change="admin.assignPermissions(user)"></multiselect></td>
+				<td>
+					<button class="btn btn-primary" ng-disabled="!user.changed" ng-click="admin.changePermissions(user, user.role)"> Save </button>
+					<button class="btn btn-danger" ng-click="admin.openDeleteModal(user)"> Delete </button>
+					<button class="btn btn-success" ui-sref="accountDetails({accountId:user._id})"> Details </button>
+				</td> <!-- TODO modal -->
+			</tr>
+			</tbody>
+		</table>
+		<p style="color:red;">{{ admin.errors.permissions }}</p>
+		<!--********** new user modal **********-->
+		<div class="modal fade" id="newUserModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+						<h2 class="modal-title" id="myModalLabel">Register new user</h2>
+					</div>
+					<div class="modal-body">
+						<form name="newUserForm" novalidate>
+
+							<label class="control-label" for="firstName">First Name</label>
+							<input type="text" ng-model="admin.newUser.firstName" id="firstName" class="form-control"/>
+
+							<label class="control-label" for="lastName">Last Name</label>
+							<input type="text" ng-model="admin.newUser.lastName" id="lastName" class="form-control"/>
+
+							<label class="control-label" for="email">E-mail</label>
+							<input type="email" ng-model="admin.newUser.email" id="email" class="form-control"/>
+
+							<label for="role" class="control-label">User Role</label>
+							<select id="role" data-ng-model="admin.newUser.role" class="form-control" ng-options="role for role in admin.allRoles"></select>
+
+							<label class="control-label" for="Username">Username</label>
+							<input type="text" ng-model="admin.newUser.username" id="Username" class="form-control"/>
+
+							<label class="control-label" for="password">Password</label>
+							<input type="password" ng-model="admin.newUser.password" id="password" class="form-control"/>
+
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger btn-lg" data-dismiss="modal">Cancel</button>
+						<button type="submit" class="btn btn-success btn-lg" ng-click="admin.saveNewUser(admin.newUser, newUserForm)">Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!--********** change password modal **********-->
+		<div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+						<h2 class="modal-title" id="myModalLabel">Password reset -<span style="font-size:15px" id="name"></span></h2>
+					</div>
+					<div class="modal-body">
+						<label for="newPassword">Enter new password</label>
+						<input class="form-control" type="text" ng-model="admin.newPassword" id="newPassword"/>
+						
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-danger btn-lg" data-dismiss="modal">Cancel</button>
+						<button type="submit" class="btn btn-success btn-lg" ng-click="admin.changePassword(admin.newPassword)">Change password</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--********** delete modal **********-->
+		<custom-modal title="'Delete User'" text="'Delete user '+admin.selectedUser.firstName+' '+admin.selectedUser.lastName+' . Are you sure?'" bg="'indianred'" name="'deleteModal'" button="'Delete user'" action="admin.deleteUser()"></custom-modal>
+	</div>
+</section>

@@ -1,0 +1,127 @@
+<div class="container">
+	<div class="row">
+		<div class="col-md-9">
+			<h1>Orders</h1>
+		</div>
+		<div class="col-md-3">
+			<br><br>
+			<button type="button" class="btn btn-success pull-right" data-toggle="modal" data-target="#newOrder">New Order</button>
+		</div>
+	</div>
+
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Client</th>
+				<th>Order Date</th>
+				<th>Due Date</th>
+				<th>Status</th>
+				<th>Action</th>
+
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="ord in order.orders track by $index"><!--  data-ng-repeat="card in cards" class="ng-scope" -->
+				<td>{{ ord.name }}</td>
+				<td> {{ ord.client.companyName }}
+					<!--<label for="clients"></label>-->
+					<!--<select ng-if="order.clients.length" name="clients" id="clients" data-ng-model="ord.client"-->
+						<!--ng-options="client as client.companyName for client in order.clients"><option value="">Select client</option></select>-->
+
+				</td>
+				<td>{{ ord.orderDate | date: 'M/d/yyyy' }}</td>
+				<td>{{ ord.dueDate | date: 'M/d/yyyy' }}</td>
+				<td>
+					<label for="orderStatus"></label>
+					<select name="orderStatus" id="orderStatus" data-ng-model="ord.status" data-ng-change="order.updateStatus(ord, ord.status)">
+						<option value="New Project">New Project</option>
+						<option value="Dev in Progress">Dev in Progress</option>
+						<option value="Client to Approve">Client to Approve</option>
+						<option value="PM to Approve">PM to Approve</option>
+						<option value="Deployed">Deployed</option>
+					</select>
+				</td>
+				<td ng-if="order.me.role=='admin'">
+					<a ui-sref="orderDetails({orderId:ord._id})"><button type="button" class="btn btn-default">Edit</button></a>
+					<a ui-sref="orderDetails({orderId:ord._id})"><button type="button" class="btn btn-default">View</button></a>
+					<a ui-sref="addCards({orderId:ord._id})"><button type="button" class="btn btn-default">Manage Cards</button></a>
+					<button type="button" class="btn btn-danger" ng-click="order.openDeleteModal(ord)">Delete</button>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+
+
+
+
+
+
+
+
+
+
+
+	<!-- Modal -->
+	<div class="modal fade" id="newOrder" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					<h4 class="modal-title" id="myModalLabel">New Order</h4>
+				</div>
+				<div class="modal-body">
+					<form role="form" name="orderForm" novalidate>
+
+						<label for="orderName">Order Name</label>
+						<input type="text" class="form-control" ng-model="order.newOrder.name" id="orderName" placeholder="Order name">
+
+						<label for="newClient">Client</label>
+						<select ng-if="order.clients.length" name="clients" id="newClient" data-ng-model="order.newOrder.client" class="form-control"
+							ng-options="client as client.companyName for client in order.clients"><option value="">Select client</option></select>
+
+						<label for="orderDate">Order date</label>
+						<p class="input-group">
+							<input type="text"
+							       id="orderDate"
+							       class="form-control"
+							       datepicker-popup="{{ format }}"
+							       ng-model="order.newOrder.orderDate"
+							       is-open="datePickers.orderDate"
+							       ng-click="order.orderDate.open = true"
+							       close-text="Close"/>
+						        <span class="input-group-btn">
+								<button type="button" class="btn btn-default" ng-click="open($event,'orderDate')"><i class="fui-calendar"></i></button>
+						        </span>
+						</p>
+
+						<label for="dueDate">Due date</label>
+						<p class="input-group">
+							<input type="text"
+							       id="dueDate"
+							       class="form-control"
+							       datepicker-popup="{{ format }}"
+							       ng-model="order.newOrder.dueDate"
+							       is-open="datePickers.dueDate"
+							       ng-click="order.dueDate.open = true"
+							       close-text="Close"/>
+						        <span class="input-group-btn">
+								<button type="button" class="btn btn-default" ng-click="open($event,'dueDate')"><i class="fui-calendar"></i></button>
+						        </span>
+						</p>
+
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					<button type="button" class="btn btn-primary" ng-click="order.saveNewOrder(order.newOrder)">Add Order</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<custom-modal title="'Delete Order?'" text="'Delete Order '+order.selectedOrder.name+'. Are you sure?'" bg="'indianred'" name="'deleteModal'" button="'Delete order'" action="order.deleteOrder()"></custom-modal>
+

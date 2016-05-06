@@ -1,0 +1,97 @@
+<!--side bar for dropdown-->
+	<v-accordion class="vAccordion--default" multiple ng-if="dropOpts.length">
+
+		<v-pane ng-repeat="drop in dropOpts track by $index">
+			<v-pane-header>
+				<span style="font-size: 15px !important;">{{ drop.name }}</span>
+			</v-pane-header>
+
+			<v-pane-content>
+                <md-radio-group ng-model="selectedValue">
+                    <md-radio-button ng-repeat="val in drop.value track by $index" ng-value="val.value" ng-class="{ active: val.value == selectedValue }"
+                                     ng-click="setValue(drop.shortCode, val.value)">
+                        {{val.name}}
+                    </md-radio-button>
+                </md-radio-group>
+			</v-pane-content>
+
+		</v-pane>
+
+	</v-accordion>
+
+<!--side bar for checkboxes-->
+<li ng-if="checkOpts.length" ng-repeat="check in checkOpts track by $index" ng-mouseenter="hoveredCheck=true;" ng-mouseleave="hoveredCheck=false"  ><!-- check.value = 'false'; -->
+    <md-input-container>
+        <md-checkbox ng-model="check.checked" ng-change="check.value = check.checked ? check.valueTrue : 'false'; setValue(check.shortCode, check.value)">
+            <span ng-class="{'blueOnHover':hoveredCheck}">{{ check.name }}</span>
+        </md-checkbox>
+    </md-input-container>
+</li>
+
+<!--side bar for text area-->
+<li ng-if="areaOpts.length" ng-repeat="area in areaOpts track by $index">
+    <md-input-container flex>
+        <label>{{ area.name }}</label>
+        <textarea rows="4" data-ng-model="area.value" class="form-control" data-ng-change="setValue(area.shortCode, area.value)"></textarea>
+    </md-input-container>
+</li>
+
+<!--side bar for text inputs-->
+<li ng-if="inputOpts.length" ng-repeat="input in inputOpts track by $index">
+    <md-input-container flex>
+        <label>{{ input.name }}</label>
+        <input type="text" ng-model="input.value" class="form-control" data-ng-change="setValue(input.shortCode, input.value)" />
+    </md-input-container>
+</li>
+
+<!--side bar for file inputs-->
+<div ng-repeat="file in fileOpts">
+	<div card-variable-file="" name="{{ file.name  }}" shortcode="{{ file.shortCode }}" value="{{ file.value }}" render="renderme" client="{{ cardFile.client }}"></div>
+</div>
+
+<!--side bar for video inputs-->
+<div ng-repeat="file in videoOpts">
+    <div card-variable-file="video" name="{{ file.name  }}" shortcode="{{ file.shortCode }}" value="{{ file.value }}" render="renderme" client="{{ cardFile.client }}"></div>
+</div>
+
+<!--side bar for pages list inputs-->
+<div ng-repeat="input in pageOpts" class="page-variable">
+    <label>{{ input.name }}</label>
+    <selectize ng-if="selectPageConfig" config="selectPageConfig" ng-model="input.valueSelected" placeholder="Not selected" data-ng-change="setValue(input.shortCode, input.valueSelected, input.valueTarget)"></selectize>
+    <md-checkbox ng-model="input.valueTarget" ng-true-value="'_blank'" ng-false-value="'_self'" data-ng-change="setValue(input.shortCode, input.valueSelected, input.valueTarget)">
+        Open in New Window
+    </md-checkbox>
+</div>
+
+<!--side bar for text inputs-->
+<li ng-if="repeatOpts.length" ng-repeat="repeat in repeatOpts track by $index">
+    <md-input-container flex layout="row">
+        <span style="margin-right: 15px;">{{ repeat.name }}</span>
+        <div>
+            <a href ng-disabled="repeat.value == 0" ng-click="repeat.value = setValue(repeat.shortCode, repeat.value - 1)" class="icon">
+                <ng-md-icon icon="remove_circle">-</ng-md-icon>
+            </a>
+
+            <span id="repeat" style="text-align:center; min-width: 30px;">{{repeat.value}}</span>
+
+            <a href ng-click="repeat.value = setValue(repeat.shortCode, repeat.value + 1)" class="icon">
+                <ng-md-icon icon="add_circle">+</ng-md-icon>
+            </a>
+        </div>
+    </md-input-container>
+</li>
+
+<!--side bar for card tutorial-->
+<md-button class="md-raised" style="background-color: #5cb85c;" ng-click="showVideoTutorial($event)" flex flex-md="100" ng-show="videoTutorial.length > 0"><i class="fa fa-camera"></i>&nbsp; Card Tutorial</md-button>
+
+<video-tutorial-modal vlink="videoTutorial" name="'videoTutorial'" ></video-tutorial-modal>
+
+<md-button class="md-raised" style="background-color: #5cb85c;" ng-click="updateCard()"><i class="fa fa-refresh"></i>&nbsp; Update Card</md-button>
+
+<custom-modal
+        title="'Update card content'"
+        text="'There are some text conflicts found in the recent card. They are going to be resolved automatically but require your attention. Are you sure you want to update card content?'"
+        name="'confirmCardConflictsResolution'"
+        button="'Update'"
+        action="updateCard(true)">
+</custom-modal>

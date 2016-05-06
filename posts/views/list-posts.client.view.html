@@ -1,0 +1,93 @@
+<div class="busy-overlay" ng-class="{loadingDone : !vm.loading}">
+    <h4 class="progress-label">Loading...</h4>
+    <md-progress-linear class="md-warn" md-mode="indeterminate"></md-progress-linear>
+</div>
+
+<section id="listPosts" class="md container" layout="column" layout-fill ng-hide="vm.loading">
+    <div layout="row">
+        <div class="posts-list-header" layout="row" flex="30">
+            <h3 flex ng-if="vm.me.role == 'admin' && vm.clients.length > 1" layout="row">
+                <md-select ng-model="vm.selectedClient" class="client-filter">
+                    <md-option value="">All</md-option>
+                    <md-option ng-repeat="client in vm.clients | orderBy:'companyName'" ng-value="client.companyName">{{client.companyName}}</md-option>
+                </md-select>
+                <span>Posts</span>
+            </h3>
+            <h3 flex ng-if="!(vm.me.role == 'admin' && vm.clients.length > 1)">Your Posts</h3>
+            <md-button class="md-raised lower new-post" ng-click="vm.newPost()">New Post</md-button>
+        </div>
+        <div layout="row" class="post-details-header" ng-if="vm.post" flex>
+            <div flex></div>
+
+            <span>
+                <md-select multiple="true" ng-model="vm.postCategories" ng-change="vm.updateCategories(vm.editPost || vm.post, vm.postCategories)" class="boxed" aria-label="Select post categories">
+                    <md-option ng-repeat="category in vm.categories | orderBy:'+'" ng-value="category">{{category}}</md-option>
+                    <md-option value="">+ New Category</md-option>
+                </md-select>
+            </span>
+
+            <md-menu md-position-mode="target-right target" md-offset="0 58" class="boxed">
+                <md-button class="md-raised lower" ng-click="$mdOpenMenu($event)" aria-label="Post status actions">
+                    <span class="status">{{(vm.editPost || vm.post).status}}</span>
+                    <ng-md-icon icon="arrow_drop_down" size="24"></ng-md-icon>
+                </md-button>
+                <md-menu-content width="4">
+                    <md-menu-item ng-repeat="action in vm.statusActions">
+                        <md-button ng-click="vm.updateStatus(vm.editPost || vm.post, action)">
+                            {{action}}
+                        </md-button>
+                    </md-menu-item>
+                </md-menu-content>
+            </md-menu>
+
+            <div ng-if="vm.post.status == 'Schedule' || vm.editPost.status == 'Schedule'" layout="row" class="post-schedule">
+                <md-input-container>
+                    <label>Schedule Date</label>
+                    <input type="date" name="scheduleDate" ng-model="vm.postScheduleDate" ng-autofocus="true" ng-change="PostForm.$setDirty()">
+                </md-input-container>
+                <md-input-container>
+                    <label>Time</label>
+                    <input type="time" name="scheduleTime" ng-model="vm.postScheduleTime" ng-change="PostForm.$setDirty()">
+                </md-input-container>
+            </div>
+
+            <md-button class="md-raised md-primary save" ng-disabled="PostForm.$pristine && !vm.editPost" ng-if="vm.editPost || vm.post.status == 'Schedule'" ng-click="vm.savePost(vm.editPost || vm.post)">Save</md-button>
+        </div>
+    </div>
+    <md-divider></md-divider>
+    <div layout="row">
+        <md-list class="posts-list" flex="30" layout="column">
+            <md-list-item class="placeholder" ng-if="(vm.posts | filter:vm.byClient(vm.selectedClient)).length == 0">
+                <h5>
+                    <p>It looks like you haven't written any posts yet!</p>
+                    <a href="#" ng-click="vm.newPost()">Create your first post</a>.
+                </h5>
+            </md-list-item>
+
+            <md-list-item ng-repeat="post in vm.posts | filter:vm.archived(false) | filter:vm.byClient(vm.selectedClient)" ng-click="vm.openDetails(post)" ng-class="{ active: post == vm.post }" aria-label="Open details">
+                <div flex class="post" layout="row" ng-include="'/modules/posts/views/post-list-item.client.view.html'"></div>
+            </md-list-item>
+            <md-button class="md-raised archived" ng-click="vm.showArchived=!vm.showArchived" ng-if="(vm.posts | filter:vm.archived(true, true) | filter:vm.byClient(vm.selectedClient)).length > 0">
+                {{vm.showArchived ? 'Hide' : 'Show'}} Archived
+            </md-button>
+            <md-list-item ng-repeat="post in vm.posts | filter:vm.archived(true) | filter:vm.byClient(vm.selectedClient)" ng-click="vm.openDetails(post)" ng-class="{ active: post == vm.post }" aria-label="Open details">
+                <div flex class="post" layout="row" ng-include="'/modules/posts/views/post-list-item.client.view.html'"></div>
+            </md-list-item>
+        </md-list>
+        <div ng-include-noscope="'/modules/posts/views/edit-post.client.view.html'" flex></div>
+    </div>
+</section>
+
+<custom-modal
+        title="'Discard changes?'"
+        text="'Are you sure you want to discard changes? All unsaved changes will be lost.'" bg="'#EF4481'"
+        name="'discardPostModal'"
+        button="'Discard'"
+        action="vm.discardChanges(true)">
+</custom-modal>
+
+<custom-modal title="'Delete post confirmation'"
+              text="'Are you sure you want to delete post ' + vm.selectedPost.title + '?'" bg="'#f5633a'"
+              name="'deletePostModal'" button="'Delete post'"
+              action="vm.deletePost(vm.selectedPost, true)">
+</custom-modal>

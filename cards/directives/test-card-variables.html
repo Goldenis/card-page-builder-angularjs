@@ -1,0 +1,64 @@
+<!--side bar for dropdown-->
+	<v-accordion class="vAccordion--default" multiple ng-if="dropOpts.length">
+
+		<v-pane ng-repeat="drop in dropOpts track by $index">
+			<v-pane-header>
+				<span style="font-size: 18px !important;">{{ drop.name }}</span>
+			</v-pane-header>
+
+			<v-pane-content>
+				<ul>
+					<li style="cursor: pointer; margin: 0; width: 110%; font-size:16px !important;" ng-class="{'lihovered':hovered}" ng-mouseenter="hovered=true;" ng-mouseleave="hovered=false" ng-click="setValue(drop.shortCode, val.value)"
+					    ng-repeat="val in drop.value track by $index"><i ng-if="val===card().actions[$index][shortCode]" class="fa fa-check"></i>{{ val.name }}</li>
+				</ul>
+			</v-pane-content>
+
+		</v-pane>
+
+	</v-accordion>
+
+<!--side bar for checkboxes-->
+<li ng-if="checkOpts.length" ng-repeat="check in checkOpts track by $index" ng-mouseenter="hoveredCheck=true;" ng-mouseleave="hoveredCheck=false" ng-init="ngvalue = check.value; ">
+	<label for="check" ng-class="{'blueOnHover':hoveredCheck}">{{ check.name }}</label>
+	<input id="check" type="checkbox" ng-model="check.value" ng-true-value="'{{ ngvalue }}'" ng-false-value="'false'" ng-change="setValue(check.shortCode, check.value)" ng-init="check.value = 'false';"/>
+</li>
+
+<!--side bar for text area-->
+<li ng-if="areaOpts.length" ng-repeat="area in areaOpts track by $index">
+	<label for="textArea"> {{ area.name }}</label>
+	<textarea style="position: relative;left: 20px; border-radius: 8px;" rows="4" id="textArea" data-ng-model="area.value" class="form-control" data-ng-change="setValue(area.shortCode, area.value)"></textarea>
+</li>
+
+<!--side bar for text inputs-->
+<li ng-if="inputOpts.length" ng-repeat="input in inputOpts track by $index">
+	<label for="textInput">{{ input.name }}</label>
+	<input style="position: relative;left: 20px;  border-radius: 6px;" type="text" ng-model="input.value" id="textInput" class="form-control" data-ng-change="setValue(input.shortCode, input.value)">
+</li>
+
+<!--side bar for file inputs-->
+<div ng-if="fileOpts.length" ng-repeat="file in fileOpts track by $index" card-variable-file="" name="{{ file.name  }}" shortcode="{{ file.shortCode }}" value="{{ file.value }}" render="renderme" client="{{ cardFile.client }}"></div>
+
+<!--side bar for video file inputs-->
+<div ng-if="videoOpts.length" ng-repeat="file in videoOpts track by $index" card-variable-file="video" name="{{ file.name  }}" shortcode="{{ file.shortCode }}" value="{{ file.value }}" render="renderme" client="{{ cardFile.client }}"></div>
+
+<!--side bar for page list dropdown-->
+<li ng-if="pageOpts.length" ng-repeat="input in pageOpts track by $index">
+	<label for="pagesListDropdown">{{ input.name }}</label>
+	<selectize id="pagesListDropdown" ng-if="selectPageConfig" config="selectPageConfig" ng-model="input.value" placeholder="Not selected" data-ng-change="setValue(input.shortCode, input.value)"></selectize>
+</li>
+
+<!--side bar for repeating variable -->
+<li ng-if="repeatOpts.length" ng-repeat="repeat in repeatOpts track by $index">
+	<label for="repeat" style="margin-right: 15px; float: left">{{ repeat.name }}</label>
+	<div>
+		<a href ng-disabled="repeat.value == 0" ng-click="repeat.value = setValue(repeat.shortCode, repeat.value - 1)" class="icon">
+			<ng-md-icon icon="remove_circle">-</ng-md-icon>
+		</a>
+
+		<span id="repeat" style="text-align:center; min-width: 30px;">{{repeat.value}}</span>
+
+		<a href ng-click="repeat.value = setValue(repeat.shortCode, repeat.value + 1)" class="icon">
+			<ng-md-icon icon="add_circle">+</ng-md-icon>
+		</a>
+	</div>
+</li>

@@ -1,0 +1,133 @@
+/*
+***********************
+* =overriding flat-ui.css file
+***********************
+*/
+
+p.input-group .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+}
+
+td.text-center {
+    font-size: 12px;
+
+}
+
+ul.summary {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+p.subtotal {
+    padding-top: 10px;
+    border-top: 1px solid #666666;
+}
+
+.addCardSelect {
+    border-radius: 20px;
+}
+
+.addCardSelect-error {
+    border-bottom: 1px solid red !important;
+    border-left: 6px solid red !important;
+}
+
+.addedCard {
+    max-width: 100%;
+    height: 40px;
+    border-radius: 20px;
+    text-indent: 10px;
+    font-size: 15px;
+
+}
+
+.cardInfo {
+    font-size: 15px;
+
+}
+
+
+[data-html="12"] {
+    background-color: white;
+}
+#card1 {
+    max-width: 80%;
+    margin: 0 auto;
+    padding: 5vh 0;
+}
+#card1 li {
+    color: #EC1C24;
+    list-style: none;
+    font-size: 21px;
+    font-weight: bold;
+}
+#card1 ul {
+    padding-left: 10px;
+}
+#card1 h2 {
+    color: #5ADCFF;
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 25px;
+    padding-left: 10px;
+}
+#card2 {
+    max-width: 80%;
+    margin: 0 auto;
+}
+#card2 .img {
+    display: block;
+    width: 100%;
+    height: 30vh;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover ;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+}
+#card2 h3 {
+    color: #111;
+    padding-left: 10px;
+}
+#card2 h4 {
+    font-style: italic;
+    font-family: serif;
+    font-size: 16px;
+    padding-left: 10px;
+}
+#card3 .navbar-brand img {
+    max-width: 50%;
+}
+#card3.navbar-default .navbar-nav > li > a {
+    color: #111;
+    font-weight: bold;
+}
+#card3 .nav > li > a {
+    padding: 15px 30px;
+}
+#card3 .nav > li > a.selected {
+    color: #EC1C24;
+}
+#card3.navbar {
+    margin-bottom: 0;
+}
+#card4.row {
+    margin: 0;
+}
+#card4 .img {
+    display: block;
+    width: 100%;
+    height: 50vh;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover ;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+}
+.imageWrapperBuilder{
+
+}

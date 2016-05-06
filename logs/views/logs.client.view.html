@@ -1,0 +1,36 @@
+<section style="margin: 20px">
+    <md-button class="md-raised" ng-click="log.refresh()" style="margin-bottom: 10px;">Refresh</md-button>
+
+    <div class="busy-overlay" ng-class="{loadingDone: !log.loading}">
+        <h4 class="progress-label">Loading...</h4>
+        <md-progress-linear class="md-warn" md-mode="indeterminate"></md-progress-linear>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>User</th>
+            <th>Details</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="entry in log.entries">
+            <td>{{$index+1}}</td>
+            <td>{{entry.created | date:'mediumDate'}}</td>
+            <td>{{entry.created | date:'shortTime'}}</td>
+            <td>{{entry.user.displayName}}</td>
+            <td ng-switch="entry.entryType">
+                <span ng-switch-when="Slow Page Saving">experienced slow saving of the {{entry.metadata.clientName}} | {{entry.metadata.pageName}} page during {{entry.metadata.durationMs / 1000 | number:1}} seconds.</span>
+            </td>
+        </tr>
+        <tr ng-if="log.entries.length == 0">
+            <td colspan="5">No logs exist</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <md-button class="md-raised" ng-click="log.refresh()" ng-if="log.entries.length > 10" style="margin-top: 10px;">Refresh</md-button>
+</section>

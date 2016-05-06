@@ -1,0 +1,37 @@
+.content {
+	margin-top: 64px;
+}
+.content.nomargin {
+	margin-top: 0px;
+}
+.undecorated-link:hover {
+	text-decoration: none;
+}
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+	display: none !important;
+}
+.ng-invalid.ng-dirty {
+	border-color: #FA787E;
+}
+.ng-valid.ng-dirty {
+	border-color: #e67e22;
+}
+
+/*override any toastr css rule here*/
+.toast-top-right {
+    top: 60px !important;
+    font-size: 15px !important;
+
+}
+
+.toast-message label {
+    color: #ffffff;
+    font-size: 15px !important;
+
+}
+
+
+.toast-message {
+    font-size: 15px !important;
+
+}

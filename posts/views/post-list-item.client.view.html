@@ -1,0 +1,25 @@
+<div layout="column">
+    <div class="title">{{post.title}}</div>
+    <div class="client" ng-if="post.client && vm.clients.length > 1 && !vm.selectedClient">Client: {{post.client.companyName}}</div>
+    <div layout="row" class="info">
+        <img class="avatar" gravatar-src="post.author.email.toLowerCase()" gravatar-size="25" alt="{{post.author.displayName}}" onerror="var scope = angular.element(this).scope(); scope.post.ui.avatarFailed = true; scope.$digest();" ng-hide="post.ui.avatarFailed" title="{{post.author.displayName}}">
+        <span class="author" ng-if="post.ui.avatarFailed" title="{{post.author.displayName}}">{{post.author.firstName}}:&nbsp;</span>
+        <span ng-if="vm.published(post)">Published {{vm.published(post) | amTimeAgo}}</span>
+        <span ng-if="post.status == 'Schedule' && !vm.published(post)">Scheduled for {{post.scheduled | amDateFormat:'LLL'}}</span>
+        <span ng-if="post.status != 'Publish' && post.status != 'Schedule'">Created {{post.created | amTimeAgo}}</span>
+    </div>
+</div>
+<div flex></div>
+<md-menu md-position-mode="target-right target" md-offset="0 65" class="settings">
+    <md-button class="md-icon-button" ng-click="$mdOpenMenu($event); $event.stopPropagation()" aria-label="Post settings">
+        <ng-md-icon icon="settings" size="30"></ng-md-icon>
+    </md-button>
+    <md-menu-content width="3">
+        <md-menu-item ng-if="post.status != 'Publish'">
+            <md-button ng-click="vm.updateStatus(post, 'Publish')">Publish</md-button>
+        </md-menu-item>
+        <md-menu-item>
+            <md-button ng-click="vm.deletePost(post)">Delete</md-button>
+        </md-menu-item>
+    </md-menu-content>
+</md-menu>

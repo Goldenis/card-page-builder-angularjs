@@ -1,0 +1,39 @@
+<div>
+
+	<div class="imageContainerVariable">
+		<p>{{ variableName }}</p>
+
+		<img ng-if="kind != 'video'" class="sideBarImage" ng-show="variableValue" ng-src="{{ variableValue }}">
+
+        <section class="video" ng-video ng-if="kind == 'video'" ng-show="variableValue">
+            <video vi-screen autoplay loop muted ng-src="{{variableValue}}" class="sideBarImage"></video>
+            <section vi-controls>
+                <a vi-controls-play><ng-md-icon icon="play_arrow"></ng-md-icon></a>
+                <a vi-controls-pause><ng-md-icon icon="pause"></ng-md-icon></a>
+            </section>
+        </section>
+
+        <div class="progressSideBar progress">
+			<div class="progress-bar" role="progressbar" aria-valuenow="{{ uploadProgress }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ uploadProgress }}%;">
+				<span ng-show="uploadProgress<100" >{{ uploadProgress == 0 ? "" : uploadProgress +"%"}}</span>
+				<span ng-show="uploadProgress===100" >Completed</span>
+			</div>
+		</div>
+
+        <div layout="row">
+            <form class="fileUploadForm">
+                <button ng-click="deleteSelectedImage($event, shortCode, variableValue)" class="btn btn-danger">
+                    <i class="fa fa-trash-o"></i>
+                </button>
+                <button class="btn btn-success" flex>
+                    <i ng-hide="variableValue" class="fa fa-file-image-o"></i><span ng-hide="variableValue" >&nbsp;&nbsp;Add {{displayKind}}</span>
+                    <i ng-show="variableValue" class="fa fa-cog"></i><span ng-show="variableValue" >&nbsp;&nbsp;Change {{displayKind}}</span>
+                    <input type="file" class="fileUploadSideBar" onchange="angular.element(this).scope().upload(this.files[0])">
+                </button>
+            </form>
+        </div>
+
+	</div>
+
+</div>
+

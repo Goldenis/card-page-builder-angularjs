@@ -1,0 +1,145 @@
+<div id="admin" style="height: 100%;overflow: hidden;">
+	<div class="row">
+		<div class="col-md-3 col-xs-6 sidebar" style="float: none;display: table-cell;vertical-align: top;">
+			<h3 style="font-size: 30px">Order Summary</h3>
+
+			<div class="summary" style="font-size:15px;">
+				<span style="float: left;">Subtotal&nbsp&nbspfor&nbsp&nbsp{{ addCards.order.subtotal.numberOfElements }}&nbsp&nbspelements: </span><span>{{ addCards.order.subtotal.sumPriceOfCards | currency }}</span>
+			</div>
+			<div class="card-item" ng-repeat="card in addCards.order.cards track by $index" ng-class="{'selectedCard':$index==addCards.indexCard}" style="font-size: 15px; cursor: pointer;" ng-click="addCards.editCard($index)">
+				Card #{{ $index+1 }}
+				<span class="number">{{ card.numElements }}</span>
+				<i class="fa fa-times amount" ng-click="addCards.openModal(card,$index)" style="cursor: pointer; padding-left: 20px;"></i>
+				<!--<i class="fa fa-pencil-square-o fa-2x amount" style="padding: 0 15px;cursor: pointer" ng-click="addCards.editCard($index)"></i>-->
+				<span class="amount">{{ card.totalPrice | currency }}</span>
+			</div>
+
+			
+		</div>
+
+		<div class="col-md-9 add-card" style="padding-bottom: 160px;float: none;display: table-cell;vertical-align: top;">
+
+			<h3 style="font-size: 30px">Add Card</h3>
+
+			<div class="row">
+				<div class="col-md-4">
+					Images
+					<hr>
+					<button style="width: 50%; position: absolute; background-color: #000000" class="btn btn-primary"><i style="font-size:20px" class="fa fa-file-image-o"></i>&nbsp;&nbsp;&nbsp;Add Image</button>
+					<input type="file" id="fileUploadCustom" ng-model="addCards.tempCard.image" onchange="angular.element(this).scope().addCards.uploadImage(this.files);" style="opacity: 0;text-indent: 9999px;width: 200px;height: 40px;"/>
+					<i ng-if="addCards.imageUploading"  style="position: absolute;top: 170px;left: 90px;" class="fa fa-spinner fa-pulse fa-2x"></i>
+					<div ng-repeat="image in addCards.order.cards[addCards.indexCard].images" style="margin-bottom: 10px; background-color: #f5f5f5;" class="well" ng-mouseenter="hoverIndex=$index" ng-mouseleave="hoverIndex=null;addCards.deleteRequest=false">
+						<div class="row" style="min-height: 145px" ng-if="image.url">
+							<div class="row" style="min-height: 100px">
+								<div class="col-md-9" >
+									<img ng-src="{{ image.url }}" style="max-width: 260px; max-height: 160px;margin-bottom: 20px; min-width: 100px;"/>
+								</div>
+								<div class="col-md-2" style="padding: 0;margin: 0;">
+									<button class="btn btn-danger" style="height: 60px; width: 60px;float: left;margin-bottom: 10px;" ng-click="addCards.toggleDelete()"><i class="fa fa-trash-o fa-lg"></i></button>
+									<i ng-if="addCards.deleteRequest && hoverIndex===$index" class="fa fa-check-circle pull-left fa-lg" ng-click="addCards.deleteImage(image)"></i>
+									<i ng-if="addCards.deleteRequest && hoverIndex===$index" class="fa fa-times pull-right fa-lg" ng-click="addCards.toggleDelete()"></i>
+								</div>
+							</div>
+							<div class="row">
+								<div class="col-md-10">
+									<input type="text" id="note" ng-model="addCards.order.cards[addCards.indexCard].images[$index].note" class="form-control" placeholder="Your note here..."/>
+								</div>
+								<div class="col-md-2" style="padding-left: 0;">
+									<button class="btn btn-success" ng-click="addCards.updateNote(addCards.order.cards[addCards.indexCard].images[$index].note, $index)"><i class="fa fa-floppy-o fa-lg"></i></button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-8">
+					Elements
+					<hr>
+					<form name="addElementForm" novalidate>
+					<table class="table table-condensed" style="font-size: 14px;">
+						<tr>
+							<td class="col-md-2">
+								<input type="number" min="1" class="form-control form-inline" size="4" id="addNumber" name="addNumber" ng-model="addCards.tempCard.number"
+								       ng-class="{'addCardSelect-error':addElementForm.addNumber.$invalid && addCards.submitted}" placeholder="Count" required>
+							</td>
+							<td ng-if="!addCards.writeOwnElement && !addCards.editElementWithArea">
+								<select class="form-control" name="addElement" required data-ng-model="addCards.tempCard.element" data-ng-change="addCards.checkForOwn(addCards.tempCard)"
+									ng-class="{'addCardSelect-error':addElementForm.addElement.$error.required && addCards.submitted}">
+									<option value="">Select element</option>
+									<option value="Image">Image</option>
+									<option value="Text Area">Text Area</option>
+									<option value="Video">Video</option>
+									<option value="Background Color">Background Color</option>
+									<option value="Background Image">Background Image</option>
+									<option value="Text/Image Hover">Text/Image Hover</option>
+									<option value="Write your own">Write your own</option>
+								</select>
+							</td>
+							<td ng-if="addCards.writeOwnElement || addCards.editElementWithArea">
+								<textarea data-ng-model="addCards.tempCard.element" required class="form-control" style="font-size: 14px" name="writeOwnElement" id="writeOwnElement"
+									  cols="10" rows="3" placeholder="write your own element" ng-class="{'addCardSelect-error':addElementForm.writeOwnElement.$error.required && addCards.submitted}"></textarea>
+							</td>
+							<td class="col-md-3" ng-if="!addCards.writeOwnRatio && !addCards.editRatioWithArea">
+								<select class="form-control" name="addRatio" data-ng-model="addCards.tempCard.ratio" data-ng-change="addCards.checkForOwn(addCards.tempCard)"
+									ng-class="{'addCardSelect-error':addElementForm.addRatio.$error.required && addCards.submitted}">
+									<option value="">Select ratio</option>
+									<option value="Full Width">Full Width</option>
+									<option value="Container Width">Container Width</option>
+									<option value="Video">Video</option>
+									<option value="50 / 50">50 / 50</option>
+									<option value="60 / 40">60 / 40</option>
+									<option value="40 / 60">40 / 60</option>
+									<option value="70 / 30">70 / 30</option>
+									<option value="30 / 70">30 / 70</option>
+									<option value="Thirds">Thirds</option>
+									<option value="Write your own">Write your own</option>
+								</select>
+							</td>
+							<td ng-if="addCards.writeOwnRatio || addCards.editRatioWithArea">
+								<textarea data-ng-model="addCards.tempCard.ratio" class="form-control" style="font-size: 14px" name="writeOwnRatio" id="writeOwnRatio"
+									  cols="10" rows="3" placeholder="write your own ratio" ng-class="{'addCardSelect-error':addElementForm.writeOwnRatio.$error.required && addCards.submitted}"></textarea>
+							</td>
+							<td class="col-md-4">
+								<button type="button" class="btn btn-success" ng-click="addCards.newElement(addCards.tempCard, addElementForm)" style="width: 30%;">Save</button>
+								<button type="button" class="btn btn-primary" ng-click="addCards.clear()" style="width: 30%;">Clear</button>
+							</td>
+						</tr>
+						<tr ng-repeat="element in addCards.order.cards[addCards.indexCard].elements track by $index">
+							<td>{{ element.number }}</td>
+							<td>{{ element.element }}</td>
+							<td>{{ element.ratio }}</td>
+							<td>
+								<button type="button" class="btn btn-default" ng-click="addCards.editElement(element)" style="width: 30%;">Edit</button>
+								<button type="button" class="btn btn-danger" ng-click="addCards.removeElement(element)" style="width: 30%;"><i class="fa fa-trash-o fa-lg"></i></button>
+							</td>
+						</tr>
+					</table>
+					</form>
+				</div>
+			</div> <!-- End add card row -->
+
+			<div class="row card-summary" style="opacity: 1;background-color: white;bottom: 0;">
+				<strong>Summary</strong>
+				<hr >
+				<div class="col-md-2">
+					Elements: <span>{{ addCards.order.cards[addCards.indexCard].numElements }}</span>
+				</div>
+				<div class="col-md-2">
+					Price: <span>{{ addCards.order.cards[addCards.indexCard].totalPrice | currency }}</span>
+				</div>
+				<div class="col-md-2">
+					Dev Cost: <span>{{ addCards.order.cards[addCards.indexCard].devCost | currency }}</span>
+				</div>
+				<div class="col-md-2">
+					Est Time: <span>{{ addCards.order.cards[addCards.indexCard].estTime }}</span>
+				</div>
+				<div class="col-md-2 col-md-offset-2">
+					<button type="button" class="btn btn-success" style="background-color: #000000" ng-click="addCards.saveNewCard()"><i class="fa fa-plus"></i>&nbsp;&nbsp;Add Card</button>
+				</div>
+			</div>
+
+		</div>
+
+	</div> <!-- END ROW -->
+</div>
+
+<custom-modal title="'Delete Card#' + addCards.deleteIndex + ', price $' + addCards.order.cards[addCards.deleteIndex-1].totalPrice" text="'Are you sure?'" bg="'indianred'" name="'deleteModal'" button="'Delete card'" action="addCards.deleteCard()"></custom-modal>

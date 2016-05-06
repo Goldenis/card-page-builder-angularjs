@@ -1,0 +1,85 @@
+<md-dialog id="pageSettingsEditorDialog" aria-label="Tags Editor" md-theme="{{theme}}">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>{{pageNew ? 'New Page' : page.name}}</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="hideDialog()">
+                <ng-md-icon icon="close"></ng-md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content>
+        <md-input-container style="padding-bottom: 15px">
+            <label>Page Name</label>
+            <input type="text" ng-model="pageName" class="form-control" ng-autofocus="true" />
+        </md-input-container>
+
+        <div layout="row">
+            <md-input-container>
+                <label>Path</label>
+                <input type="text" ng-model="pageBasePath" class="form-control" />
+            </md-input-container>
+            <span style="margin:auto; padding-bottom: 8px;">/</span>
+            <md-input-container>
+                <label>Page Url</label>
+                <input type="text" ng-model="pageUrl" class="form-control" />
+            </md-input-container>
+        </div>
+
+        <select ng-if="selectClient" ng-model="$parent.pageClient" class="form-control" style="margin-bottom: 26px"
+                ng-options="client as client.companyName for client in clients | orderBy:'companyName'" ng-disabled="lazyLoading">
+            <option value="">Select client</option>
+        </select>
+
+        <tags-input flex ng-model="pageTags" min-length="1" add-on-paste="true">
+            <auto-complete source="loadClientTags(page.client, $query)" min-length="2"></auto-complete>
+        </tags-input>
+
+        <md-input-container style="padding-bottom: 0">
+            <label>Description</label>
+            <textarea rows="3" data-ng-model="pageDescription" class="form-control"></textarea>
+        </md-input-container>
+
+        <md-input-container>
+            <label>SEO Title</label>
+            <input type="text" ng-model="pageTitle" class="form-control" />
+        </md-input-container>
+
+        <md-input-container>
+            <label>SEO Keywords</label>
+            <input type="text" ng-model="pageKeywords" class="form-control" />
+        </md-input-container>
+
+        <md-input-container>
+            <div ng-if="pageSocialImageUrl"><img class="social-image" ng-src="{{pageSocialImageUrl}}"></div>
+
+            <div class="progressSideBar progress" ng-if="uploadProgress != null">
+                <div class="progress-bar" role="progressbar" aria-valuenow="{{ uploadProgress }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ uploadProgress }}%;">
+                    <span ng-show="uploadProgress<100">{{ uploadProgress == 0 ? "" : uploadProgress +"%"}}</span>
+                    <span ng-show="uploadProgress===100">Completed</span>
+                </div>
+            </div>
+
+            <form class="fileUploadForm" layout="row">
+                <button ng-click="deleteSocialImage($event)" class="btn btn-danger" ng-disabled="!pageSocialImageUrl">
+                    <i class="fa fa-trash-o"></i>
+                </button>
+                <button class="btn btn-success" flex>
+                    <i ng-hide="pageSocialImageUrl" class="fa fa-file-image-o"></i><span ng-hide="pageSocialImageUrl">Add Social Image</span>
+                    <i ng-show="pageSocialImageUrl" class="fa fa-cog"></i><span ng-show="pageSocialImageUrl">Change Social Image</span>
+                    <input type="file" class="fileUploadSideBar" onchange="angular.element(this).scope().uploadSocialImage(this.files[0])">
+                </button>
+            </form>
+        </md-input-container>
+    </md-dialog-content>
+
+    <div class="md-actions" layout="row" ng-if="!pageNew">
+        <md-button ng-click="hideDialog()" class="md-primary md-raised half" style="background-color: #6e7f84">Cancel</md-button>
+        <md-button ng-click="saveDetails()" class="md-primary md-raised half" style="background-color: #ef4e43">Save</md-button>
+    </div>
+
+    <div class="md-actions" layout="row" ng-if="pageNew">
+        <md-button ng-click="saveDetails()" class="md-primary md-raised half" style="background-color: #6e7f84">Save and Close</md-button>
+        <md-button ng-click="saveDetails(true)" class="md-primary md-raised half" style="background-color: #5fba53">Save and Edit</md-button>
+    </div>
+</md-dialog>

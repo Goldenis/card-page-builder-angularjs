@@ -1,0 +1,32 @@
+<section class="container" data-ng-controller="ClientsController" data-ng-init="find()">
+
+        <h1>Clients</h1>
+ 
+ <a data-ng-href="#!/clients/create" ><button type="button" class="btn btn-success pull-right btn-lg">New Client</button></a>
+
+        <table class="table table-hover">
+    <thead>
+    <th>Client</th>
+    <th>FW URL</th>
+    <th>Edit</th>
+    </thead>
+    <tr data-ng-repeat="client in clients | orderBy: 'companyName'">
+    <td>{{client.companyName}}</td>
+    <td>{{client.fwUrl}}</td>
+    <td>
+        <a class="btn btn-primary" href="/#!/clients/{{client._id}}/edit">
+            <i class="glyphicon glyphicon-edit"></i>
+        </a>
+        <button class="btn btn-success" ng-click="duplicateClient(client)"><i class="fa fa-copy"></i></button>
+        <button class="btn btn-danger" ng-click="openDeleteModal(client)">Delete</button>
+    </td>
+    </tr>
+</table>
+
+    <div class="alert alert-success text-center" data-ng-hide="!clients.$resolved || clients.length">
+    	No Clients yet, why don't you <a href="/#!/clients/create">create one</a>?
+    </div>
+
+    <custom-modal title="'Delete client confirmation'" text="'Are you sure you want to delete client ' + selectedClient.companyName + '?'"
+                  bg="'indianred'" name="'deleteClientModal'" button="'Delete client'" action="deleteClient(selectedClient)"></custom-modal>
+</section>

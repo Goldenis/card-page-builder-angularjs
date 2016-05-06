@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/lib/angular-hotkeys/build/hotkeys.css">
+  <style type="text/css">
+      @charset "UTF-8";[ng\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak{display:none;}ng\:form{display:block;}
+      .repeat-variable, .repeat-variable > item { display: inline; }
+      .repeat-variable > template { display: none; }
+  </style>
+
+  <script type="text/javascript" src="/lib/angular/angular.js"></script>
+  <script type="text/javascript" src="/lib/angular-sanitize/angular-sanitize.js"></script>
+  <script type="text/javascript" src="/lib/jquery/dist/jquery.min.js"></script>
+  <script type="text/javascript" src="/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/lib/angular-hotkeys/build/hotkeys.js"></script>
+  <script type="text/javascript" src="/lib/underscore/underscore-min.js"></script>
+  <script type="text/javascript" src="/modules/core/services/helpers.js"></script>
+  <script type="text/javascript" src="/modules/core/services/jquery.htmlOuter.js"></script>
+
+  <script type="text/javascript">
+      angular.module('pages', []);
+      angular.module('cards', []);
+  </script>
+  <script type="text/javascript" src="/modules/pages/services/page.html.helper.service.js"></script>
+  <script type="text/javascript" src="/modules/cards/services/cards.html.helper.service.js"></script>
+</head>
+<body style="background-color:transparent">
+<div ng-app="previewIframe" ng-cloak>
+  <div ng-controller="IframeCtrl">
+    <!-- <div ng-bind-html="vm.header"></div> -->
+    <div id="header"></div>
+    <style parse-style>{{vm.css}}</style>  
+    <div class="card-preview" >
+      <!-- <div ng-bind-html="vm.html"></div> -->
+    </div>
+    <div id="js"></div> 
+    <div id="footer"></div> 
+  </div>
+</div>
+  <script type="text/javascript">
+
+    angular.module('previewIframe', ['ngSanitize','cfp.hotkeys', 'pages', 'cards']).
+      controller('IframeCtrl', ['$scope', '$sce', '$compile', '$timeout', 'hotkeys', 'pagesHtmlHelper', 'cardsHtmlHelper', function($scope, $sce, $compile, $timeout, hotkeys, pagesHtmlHelper, cardsHtmlHelper) {
+
+        hotkeys
+        .add({
+            combo: 'mod+s',
+            description: 'Save on edit card page',
+            callback: function(event, hotkey) {
+                event.preventDefault();
+                try {
+                  parent.updateCard();
+                }
+                catch(err){};
+            }
+        });
+
+          // set some defaults for the start and when the passed input values are empty
+         $scope.vm = {
+          html: '',
+          css: '',
+          js: '',
+          image: '',
+          header: '',
+          footer: '',
+          actions: []
+         };
+
+         function generateUniqueName() {
+               var text     = "";
+               var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+               for( var i=0; i < 8; i++ ) {
+                    text += possible.charAt(Math.floor(Math.random() * possible.length));
+               }
+               return text;              
+           }
+
+        $scope.cardid = generateUniqueName();
+        $scope.clientnav = $sce.trustAsHtml(['Page 1', 'Page 2', 'Page 3'].map(function (text) { return '<li><a href="#">' + text + '</a></li>'; }).join(''));
+
+        $scope.bindVariablesToScope = function() {
+            if ($scope.vm.actions == undefined) return;
+            $scope.vm.actions.forEach(function (action) {
+                 try {     // Added by Patrick
+                      var key = Object.keys(action)[0];
+                      $scope[key] = action[key];
+                 } catch(err) {}
+            });
+            $scope.$apply();
+        };
+
+        window.update = function(data) {
+          if (data.name == 'actions') {
+            $scope.vm[data.name] = data.value;
+            $scope.bindVariablesToScope();
+
+            if ($('.card-preview .repeat-variable').length > 0) {
+              window.update({ name: 'html', value: $scope.vm.html });
+            }
+
+            return;
+          }
+          $scope.vm[data.name] = data.value; //$sce.trustAsHtml(data.value);
+          if (data.name == 'header') {
+            var element = jQuery("#header");
+            var html = pagesHtmlHelper.handleConflicts(data.value);
+            element.append(html);
+          }
+          if (data.name == 'footer') {
+            /*var linkFn = $compile(data.value); 
+            var content = linkFn($scope); */
+            var element = jQuery("#footer");
+            var html = pagesHtmlHelper.handleConflicts(data.value);
+            element.append(html);
+          }
+
+          if (data.name == 'js') {
+              /*var linkFn = $compile('<script>'+data.value+'<\/script>');
+              var content = linkFn($scope); */
+              var element = jQuery("#js"); 
+              element.empty();
+              element.append('<script>'+data.value+'<\/script>');
+          }
+
+          if (data.name == 'html') {
+            $('.card-preview').html('');
+            var html = cardsHtmlHelper.compileCardHtml(data.value, { actions: $scope.vm['actions'] });
+            var content = '<div>' + html + '</div>';
+            if (data.value) {
+              $('.card-preview').append($compile(content)($scope));
+            }
+          }
+
+          if (!$scope.$$patch) {
+            $scope.$apply();
+          }
+          
+        };
+
+        window.executeScripts = function(data) {
+          document.write($scope.vm.footer);
+        }
+
+        window.run = function(data){
+          /*var linkFn = $compile('<script>'+data+'<\/script>');
+          var content = linkFn($scope); */
+          var element = jQuery("#js"); 
+          element.empty();
+          element.append(data);
+        }
+      }])
+      .directive('parseStyle', function($interpolate) {
+         return function(scope, elem) {
+              var exp = $interpolate(elem.html()),
+                   watchFunc = function () { return exp(scope); };
+
+              scope.$watch(watchFunc, function (html) {
+                   elem.html(html);
+              });
+         };
+      });
+
+  </script>
+</body>
+</html>
+

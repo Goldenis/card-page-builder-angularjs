@@ -1,0 +1,147 @@
+<section id="viewer" class="container-fluid card-editor" data-ng-init=" arboardBackground = '#F7F7F7';" ><!-- findOne();  isReadyForTeamReview(); setAceForEditCard(); onload="onload();" -->
+  <div class="row">
+    <form class="form-horizontal" data-ng-submit="update()" novalidate >
+    <div class="sidebar" style="" >
+    <h5 style="padding-bottom: 0;margin-bottom: 0;">{{card.name}}</h5>
+    <small>Current card status: <span style="font-style: italic">{{ card.cardStatus }}</span></small>
+    <br>
+    <div class="col-md-12">
+    <div class="row">
+      <h3>Comment</h3>
+    </div>
+    <div class="row">
+    
+    <!--  <div class="col-md-6"> -->
+    <div class="widget-area no-padding blank">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Comment</th>
+          <th>Created on</th>
+          <th>Edit</th>
+        </tr>
+      </thead>
+      <tr data-ng-repeat="commentItem in card.comments" style="background:none !important;">
+        <td>{{commentItem.displayName}}</td>
+        <td>{{commentItem.comment}}</td>
+        <td>{{commentItem.created | date:'mediumDate' }}</td>
+        <td><a class="btn btn-danger" data-ng-click="removeCommentAtIndex($index);" data-ng-show="commentItem.user == authentication.user.username"> <i class="fa fa-trash-o"></i> </a></td>
+      </tr>
+    </table>
+    <div class="status-upload">
+    <form name="addCommentForm" data-ng-submit="addComment()" novalidate>
+      <div class="form-group">
+        <textarea class="form-control" row="4" placeholder="What are you doing right now?" data-ng-model="newComment.comment" required></textarea>
+      </div>
+      <!-- dead code : need to be checked-->
+      <button type="submit" class="btn btn-success green" ng-disabled="addCommentForm.$invalid"><i class="fa fa-share"></i> Comment</button>
+    </form>
+  </div>
+  <!-- Status Upload  -->
+  </div>
+  <!-- Widget Area --> 
+  <!-- </div> -->
+  
+  </div>
+  </div>
+  <!-- </div> --> 
+  <div class="col-md-12">
+    <div class="row">
+      <h4>Total time spent: <h5>{{getTotalTime()}}</h5></h4>
+      <h4>Users who edited this card:</h4>
+      <p ng-repeat="item in timeloggedUsers"> - {{item}}</p>
+    </div>
+  </div>
+
+  <div class="col-md-12" ng-if="false">
+    <div class="row">
+      <h3>Time Log</h3>
+    </div>
+      
+    <div class="row" ng-init="totalTime = 0;">
+      <div class="widget-area no-padding blank">
+      <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>First Name</th>
+              <th>End Time</th>
+              <th>Total Time</th>
+            </tr>
+          </thead>
+          <tr data-ng-repeat="timelog in card.timelog"> 
+            <td>{{timelog.user.firstName}}</td>
+            <td>{{timelog.end | date: "MMM d ',' h:mm a" }}</td>              
+            <td>{{getDifferMin(timelog.start, timelog.end)}} mins</td>
+          </tr>
+          <tr>
+            <td></td><td>Total:</td><td>{{getTotalTime()}} mins</td>
+          </tr>
+      </table>
+      
+    </div>
+    </div>
+  </div>
+  <script>
+$('#myTab a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})
+</script>
+  </form>
+  </div>
+  </div>
+  <!-- START card edit previwe -->
+  <div class="toolbar" ng-init="artboardViewMode = 'default';">
+    <button type="button" ng-model="styleOne" class="navbar-btn btn btn-sm " ng-click=" artboardViewMode = 'iphone5'; setIframeSize(shrink); " ng-class="{ 'btn-primary': artboardViewMode == 'iphone5'}">iphone 5</button>
+    <button type="button" ng-model="styleOne" class="navbar-btn btn btn-sm " ng-click=" artboardViewMode = 'iphone6'; setIframeSize(shrink); " ng-class="{ 'btn-primary': artboardViewMode == 'iphone6'}">iphone 6</button>
+    <button type="button" ng-model="styleOne" class="navbar-btn btn btn-sm " ng-click=" artboardViewMode = 'iphone6s'; setIframeSize(shrink); " ng-class="{ 'btn-primary': artboardViewMode == 'iphone6s'}">iphone 6 Plus</button>
+    <button type="button" class="navbar-btn btn btn-sm " ng-click=" artboardViewMode = 'ipad_port'; setIframeSize(shrink); " ng-class="{ 'btn-primary': artboardViewMode == 'ipad_port'}">iPad Portrait</button>
+    <button type="button" class="navbar-btn btn btn-sm" ng-click=" artboardViewMode = 'ipad_land'; setIframeSize(shrink); " ng-class="{ 'btn-primary': artboardViewMode == 'ipad_land'}">iPad Landscape</button>
+    <button type="button" class="navbar-btn btn btn-sm" ng-click=" artboardViewMode = 'desktop';  setIframeSize(shrink); " ng-class="{ 'btn-primary': artboardViewMode == 'desktop'}">Desktop</button>
+    <button type="button" class="navbar-btn btn btn-sm" ng-click=" artboardViewMode = 'default';  setIframeSize(shrink); " ng-class="{ 'btn-primary': artboardViewMode == 'default'}">Full Width</button>
+    <div class="btn-group">
+      <button data-toggle="dropdown" class="navbar-btn btn btn-sm btn-primary dropdown-toggle" type="button">Zoom<span class="caret"></span></button>
+      <ul role="menu" class="dropdown-menu">
+        <li><a ng-click="setIframeSize(0.5);">50%</a>
+        <li><a ng-click="setIframeSize(0.75);">75%</a>
+        <li><a ng-click="setIframeSize(1);">100%</a>
+      </ul>
+    </div>
+    <button type="button" class="navbar-btn btn btn-sm" ng-click="openPreviewiframe();">New Window</button>
+    <!--<a class="navbar-btn btn btn-sm" ui-sref="previewCard({cardId:card._id})" target="_blank">New Window</a>--> 
+    <span ng-if="authentication.user.role==='client' && (card.cardStatus==='Ready for Client Review' || card.cardStatus==='Edits Required')">
+    <button type="button" class="navbar-btn btn btn-sm btn-success pull-right" style="margin-left: 10px;margin-right: 20px;" ng-click="openApproveModal()">Approve</button>
+    <button ng-if="card.cardStatus!=='Edits Required'" type="button" class="navbar-btn btn btn-sm btn-danger pull-right" ng-click="openBackToEditModal()">Send back for edits</button>
+    </span>
+    <button type="button" style="margin-right: 20px;" class="navbar-btn btn btn-sm pull-right" ui-sref="listCards"><i class="fa fa-angle-double-left"></i>&nbsp&nbspReturn to card overview</button>
+  </div>
+
+  <div class="background" style="background: {{arboardBackground}};">
+
+      <div class="artboard "  id="grid"  ng-class="{iframe_wrap_iphone5: artboardViewMode == 'iphone5', iframe_wrap_iphone6: artboardViewMode == 'iphone6', iframe_wrap_iphone6s: artboardViewMode == 'iphone6s',iframe_wrap_ipad_port: artboardViewMode == 'ipad_port', iframe_wrap_ipad_land: artboardViewMode == 'ipad_land' && shrink == '1', iframe_wrap_ipad_land_shrink: artboardViewMode == 'ipad_land' && shrink == '0.75', iframe_wrap_web_browser: artboardViewMode == 'desktop' && shrink == '1', iframe_wrap_web_browser_shrink: artboardViewMode == 'desktop' && shrink == '0.75', iframe_wrap_ipad_land_shrink_50: artboardViewMode == 'ipad_land' && shrink == '0.5', iframe_wrap_web_browser_shrink_50: artboardViewMode == 'desktop' && shrink == '0.5'}">
+
+        <iframe id="card_iframe" class="iframe_view_card" ng-src="/modules/cards/views/previewiframe.html" sandbox="allow-same-origin allow-scripts" frameborder=0 ALLOWTRANSPARENCY="true" ng-cloak directive-load="findOne();" ng-class="{'iframe_ipad_land_shrint': shrink == '0.75' && artboardViewMode == 'ipad_land', 'iframe_view_card_shrink': shrink == '0.75' && ( artboardViewMode == 'desktop' || artboardViewMode == 'default'), 'iframe_ipad_land_shrint_50': shrink == '0.5' && artboardViewMode == 'ipad_land', 'iframe_view_card_shrink_50': shrink == '0.5' && ( artboardViewMode == 'desktop' || artboardViewMode == 'default')}" style="width:{{artboardWidth}}; height:{{artboardHeight}}"></iframe><!-- directive-load="loadedIframe();"  -->
+
+      </div> <!-- END artboard -->
+      
+    </div><!-- END artboard -->
+
+  <!-- END card_edit_preview -->
+  
+  <custom-modal title="'Change card status'" text="'Are you sure you want set card status to: Ready for Team Review? All editing features will be disabled.'" bg="'#6FC58B'" name="'ReadyForTeamReviewModal'" button="'Change status'" action="updateStatus(card,'Ready for Team Review')"></custom-modal>
+</section>
+<script>
+
+$('#desktop').click(function(){
+    $('.card-preview').addClass('desktop');
+    $('.card-preview').removeClass('mobile');
+
+});
+$('#mobile').click(function(){
+    $('.card-preview').addClass('mobile');
+    $('.card-preview').removeClass('desktop');
+
+});
+
+</script> 

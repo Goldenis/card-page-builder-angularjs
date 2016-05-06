@@ -1,0 +1,13 @@
+<md-dialog id="{{name}}" md-theme="{{ theme }}" aria-label="{{ title }}" class="progress-modal">
+    <div class="header" ng-if="title">
+        <h2>{{ title }}</h2>
+        <hr>
+    </div>
+
+    <md-dialog-content role="document" tabIndex="-1">
+        <md-progress-linear md-mode="determinate" value="{{progress}}"></md-progress-linear>
+        <ol class="steps" ng-if="steps.length">
+            <li ng-repeat="step in steps" ng-class="{ current: $last }">{{step}}</li>
+        </ol>
+    </md-dialog-content>
+</md-dialog>

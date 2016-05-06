@@ -1,0 +1,16 @@
+<md-dialog id="{{name}}" md-theme="{{ theme }}" aria-label="{{ title }}">
+    <div class="header" ng-if="title">
+        <h2>{{ title }}</h2>
+        <hr>
+    </div>
+
+    <md-dialog-content role="document" tabIndex="-1">
+        <p ng-if="text">{{ text }}</p>
+        <p ng-if="html" ng-bind-html="html"></p>
+    </md-dialog-content>
+
+    <div class="md-actions">
+        <md-button ng-click="hideDialog()" class="md-primary md-raised" style="background-color: #6e7f84" ng-class="{ half: button }">{{button ? 'Cancel' : 'OK'}}</md-button>
+        <md-button ng-click="action()" class="md-primary md-raised" ng-autofocus="show" style="background-color: #ef4e43" ng-class="{ half: button }" ng-if="button">{{button}}</md-button>
+    </div>
+</md-dialog>

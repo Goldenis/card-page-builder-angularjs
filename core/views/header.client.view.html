@@ -1,0 +1,122 @@
+<div id="topNav" data-ng-controller="HeaderController">
+    <md-fab-toolbar md-open="ui.toolbarOpened" count="ui.count" ng-class="{ 'md-is-open': ui.toolbarOpened }">
+        <md-fab-trigger class="align-with-text">
+            <md-button aria-label="menu" class="md-fab md-primary">
+                <md-icon class="menu-icon"></md-icon>
+            </md-button>
+        </md-fab-trigger>
+        <md-toolbar ng-class="{ open: ui.toolbarOpened }">
+        	<div class="md-toolbar-tools" data-ng-if="!menu.shouldRender(authentication.user);">
+      			<span>CARDKIT</span>
+      		</div>
+            <md-fab-actions class="md-toolbar-tools" data-ng-if="menu.shouldRender(authentication.user);">
+                <div data-ng-repeat="item in menu.items | orderBy: 'position'" data-ng-if="item.shouldRender(authentication.user);"
+                    ui-route="{{item.uiRoute}}" class="{{item.menuItemClass}}" ng-class="{active: ($uiRoute)}">
+                    <md-button class="md-default-theme" href="/#!/{{item.link}}">{{item.title}}</md-button>
+                </div>
+
+                <div ng-if="additional_links" ng-repeat="link in additional_links">
+                    <md-button class="md-default-theme" ng-href="{{link.url}}" target="{{link.newWindow ? '_blank' : '_self'}}">{{link.label}}</md-button>
+                </div>
+
+                <div ui-route="/signin" ng-class="{active: $uiRoute}" data-ng-hide="authentication.user" class="pull-right">
+                    <md-button href="/#!/signin">Sign In</md-button>
+                </div>
+
+                <!-- angular+css trick: avoid wrapping element into .md-fab-action-item using ng-if="true" -->
+                <div class="pull-right divider" ng-if="true"></div>
+
+                <div ng-class="{active: $uiRoute}" ng-if="authentication.user.role=='admin'" data-ng-show="authentication.user" class="pull-right">
+                    <md-button ui-sref="admin">Manage users/permissions</md-button>
+                </div>
+
+                <div class="dropdown pull-right" data-ng-if="authentication.user">
+                    <md-button href="#" class="dropdown-toggle">
+                        <span data-ng-bind="authentication.user.displayName"></span> <b class="caret"></b>
+                    </md-button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="/#!/settings/profile">Edit Profile</a>
+                        </li>
+                        <!-- <li>
+                            <a href="/#!/settings/accounts">Manage Social Accounts</a>
+                        </li> -->
+                        <li class="divider"></li>
+                        <li>
+                            <a href="#" ng-click="signOut()">Signout</a>
+                        </li>
+                    </ul>
+                </div>
+            </md-fab-actions>
+        </md-toolbar>
+    </md-fab-toolbar>
+</div>
+
+
+
+<!--
+
+<div class="container-fluid" data-ng-controller="HeaderController">
+	<div class="navbar-header">
+		<button class="navbar-toggle" type="button" data-ng-click="toggleCollapsibleMenu()">
+			<span class="sr-only">Toggle navigation</span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+		</button>
+		<a href="/#!/" class="navbar-brand">CardKit</a>
+	</div>
+	<nav class="collapse navbar-collapse" collapse="!isCollapsed" role="navigation">
+		<ul class="nav navbar-nav" data-ng-if="menu.shouldRender(authentication.user);">
+			<li data-ng-repeat="item in menu.items | orderBy: 'position'" data-ng-if="item.shouldRender(authentication.user);" ng-switch="item.menuItemType" ui-route="{{item.uiRoute}}" class="{{item.menuItemClass}}" ng-class="{active: ($uiRoute), 'open':hovering}" dropdown="item.menuItemType === 'dropdown'" ng-mouseenter="hovering=true" ng-mouseleave="hovering=false">
+				<a ng-switch-when="dropdown"  href="/#!/{{item.link}}"> &lt;!&ndash; class="dropdown-toggle" &ndash;&gt;
+					<span data-ng-bind="item.title"></span>
+					<b class="caret"></b>
+				</a>
+				<ul ng-switch-when="dropdown" class="dropdown-menu">
+					<li data-ng-repeat="subitem in item.items | orderBy: 'position'" data-ng-if="subitem.shouldRender(authentication.user);" ui-route="{{subitem.uiRoute}}" ng-class="{active: $uiRoute}">
+						<a href="/#!/{{subitem.link}}" data-ng-bind="subitem.title"></a>
+					</li>
+				</ul>
+				<a ng-switch-default href="/#!/{{item.link}}" data-ng-bind="item.title"></a>
+			</li>
+		</ul>
+		<ul class="nav navbar-nav navbar-right" data-ng-hide="authentication.user">
+			<li class="divider-vertical"></li>
+			<li ui-route="/signin" ng-class="{active: $uiRoute}">
+				<a href="/#!/signin">Sign In</a>
+			</li>
+		</ul>
+		<ul class="nav navbar-nav navbar-right" data-ng-show="authentication.user">
+			&lt;!&ndash;<li ui-route="/signup" ng-class="{active: $uiRoute}">&ndash;&gt;
+				&lt;!&ndash;<a href="/#!/signup">Register User</a>&ndash;&gt;
+			&lt;!&ndash;</li>&ndash;&gt;
+			<li ng-class="{active: $uiRoute}" ng-if="authentication.user.role=='admin'">
+				<a ui-sref="admin">Manage users/permissions</a>
+			</li>
+
+			<li class="dropdown" >
+
+				<a href="#" class="dropdown-toggle">
+					<span data-ng-bind="authentication.user.displayName"></span> <b class="caret"></b>
+				</a>
+				<ul class="dropdown-menu">
+					<li>
+						<a href="/#!/settings/profile">Edit Profile</a>
+					</li>
+					&lt;!&ndash; <li>
+						<a href="/#!/settings/accounts">Manage Social Accounts</a>
+					</li> &ndash;&gt;
+					<li data-ng-show="authentication.user.provider === 'local'">
+						<a href="/#!/settings/password">Change Password</a>
+					</li>
+					<li class="divider"></li>
+					<li>
+						<a ng-click="signOut()">Signout</a>
+					</li>
+				</ul>
+			</li>
+		</ul>
+	</nav>
+</div>
+-->

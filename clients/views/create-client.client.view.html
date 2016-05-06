@@ -1,0 +1,41 @@
+<section id="clientDetails" class="container" data-ng-controller="ClientsController">
+    <div class="page-header">
+        <h1>New Client</h1>
+    </div>
+    <div class="col-md-12">
+        <form class="form-horizontal" data-ng-submit="create()" novalidate>
+            <fieldset>
+                <div class="form-group">
+                    <label class="control-label" for="companyName">Company Name</label>
+                    <div class="controls">
+                        <input type="text" data-ng-model="companyName" id="companyName" class="form-control" placeholder="Company Name" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="fwURL">FW URL</label>
+                    <div class="controls">
+                        <input type="text" data-ng-model="fwUrl" id="fwURL" class="form-control" placeholder="FW Folder Url" >
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="production_refresh_url">Production Refresh URL</label>
+                    <div class="controls">
+                        <input type="text" data-ng-model="production_refresh_url" id="production_refresh_url" class="form-control" placeholder="Production Refresh URL" >
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="beta_refresh_url">Beta Refresh URL</label>
+                    <div class="controls">
+                        <input type="text" data-ng-model="beta_refresh_url" id="beta_refresh_url" class="form-control" placeholder="Beta Refresh URL" >
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="submit" class="btn btn-default">
+                </div>
+				<div data-ng-show="error" class="text-danger">
+					<strong data-ng-bind="error"></strong>
+				</div>
+            </fieldset>
+        </form>
+    </div>
+</section>

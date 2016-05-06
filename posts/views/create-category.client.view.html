@@ -1,0 +1,25 @@
+<md-dialog id="createCategoryDialog" aria-label="Category category" md-theme="{{theme}}">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2>New Category</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="hideDialog()" aria-label="Cancel category create">
+                <ng-md-icon icon="close"></ng-md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <form ng-submit="save()" novalidate>
+        <md-dialog-content>
+            <md-input-container style="padding-bottom: 15px">
+                <label>Category Name</label>
+                <input type="text" ng-model="categoryName" class="form-control" ng-autofocus="true" />
+            </md-input-container>
+        </md-dialog-content>
+
+        <div class="md-actions" layout="row">
+            <md-button type="button" ng-click="hideDialog()" class="md-primary md-raised half" style="background-color: #6e7f84">Cancel</md-button>
+            <md-button type="submit" class="md-primary md-raised half" style="background-color: #ef4e43">Save</md-button>
+        </div>
+    </form>
+</md-dialog>

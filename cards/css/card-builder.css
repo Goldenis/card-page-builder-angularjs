@@ -1,0 +1,16 @@
+/*[ng\:cloak], [ng-cloak], .ng-cloak {*/
+    /*display: none !important;*/
+/*}*/
+.card-search-filter>div>div {
+	display: inline-block;
+	margin-right: 10px;
+}
+.card-search-filter>div>div:last-child {
+	margin: 0px;
+	float: right;
+}
+.card-search-filter {
+	width: 100%;
+}
+#viewer .table-hover>tbody>tr:hover {background: ;}
+#viewer .table-hover > tbody > tr:hover > td, .table-hover > tbody > tr:hover > th{background: transparent;}

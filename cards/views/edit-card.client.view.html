@@ -1,0 +1,441 @@
+<section id="cardsController" class="container-fluid card-editor" data-ng-init="init();  arboardBackground = '#F7F7F7';" ><!-- findOne();  isReadyForTeamReview(); setAceForEditCard(); onload="onload();" -->
+
+<div class="row">
+<form class="form-horizontal" data-ng-submit="update()" novalidate data-ng-init=''>
+ <div class="sidebar" style="" >
+     <h5 style="padding-bottom: 0;margin-bottom: 0;">{{card.name}}</h5>
+     <small>Current card status: <span style="font-style: italic">{{ card.cardStatus }}</span></small>
+      <input type="submit" class="btn pull-right btn-nav btn-success" value="Update" style="bottom:30px; position: relative" ng-disabled = "card.cardStatus === 'Ready for Team Review'" />
+
+     <br>
+
+<div role="tabpanel" class="">
+
+
+ <ul class="nav nav-pills " role="tablist" id="myTab">
+  <li role="presentation" class="active"><a href="#code" aria-controls="code" role="tab" data-toggle="tab">Code</a></li>
+
+  <li role="presentation" ><a href="#artwork" aria-controls="artwork" role="tab" data-toggle="tab">Media</a></li>
+  <li role="presentation" ><a href="#settings" aria-controls="settings" role="tab" data-toggle="tab">Variables</a></li>
+  <li role="presentation" ><a href="#notes" aria-controls="notes" role="tab" data-toggle="tab">Notes</a></li>
+  <li role="presentation" ><a href="#comments" aria-controls="comments" role="tab" data-toggle="tab">Comments</a></li>
+  <li role="presentation" ><a href="#test_variables" aria-controls="test_variables" role="tab" data-toggle="tab" ng-click="testVariables()">Test Variables</a></li>
+
+</ul>
+
+<div class="tab-content">
+    <!-- Start Code Tab -->
+    <div role="tabpanel" class="tab-pane active" id="code">
+                <div class="form-group">
+                    <label class="control-label" for="html">HTML</label>
+                    <div id="html" class="form-control" style="height: 30vh"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label" for="less">LESS</label>
+                    <div class="controls">
+                    <div id="less" class="noselection form-control" style="height: 30vh"></div>
+                    </div>
+                </div>
+
+                <div class="form-group" style="display:none" > <!-- style="display:none" -->
+                    <label class="control-label" for="css">CSS</label>
+                    <div class="controls">
+                    <div id="css" class="form-control" style="height: 30vh"></div>
+                    </div>
+                </div>
+
+
+                 <div class="form-group">
+                    <label class="control-label" for="js">JS</label>
+                    <div class="controls">
+                      <div id="js" class="form-control" style="height:200px"></div>                    
+                    </div>
+                </div>
+
+                <div class="form-group" >
+                  <input type="checkbox" aria-label="" ng-model="enabledJSEditor" ng-change="checkJSEditor();"  ng-disabled = "card.cardStatus === 'Ready for Team Review'"/>Enable JS Editor<br>
+                  <button class="btn btn-default" ng-click="runJS()" onClick="return false;" ng-disabled = "card.cardStatus === 'Ready for Team Review' || !enabledJSEditor" >Run</button>
+                </div>
+
+
+
+				<div data-ng-show="error" class="text-danger">
+					<strong data-ng-bind="error"></strong>
+				</div>
+         <div class="form-group">
+                    <input type="submit" value="Update" class="btn btn-primary btn-block" ng-disabled = "card.cardStatus === 'Ready for Team Review'">
+        </div>
+        </div>
+ <!--  END CODE TAB -->
+ 
+<div role="tabpanel" class="tab-pane" id="artwork">
+  <div class="form-group">
+    <h5>Card Tutorial</h5>
+    <form class="fileUploadForm" ng-if="authentication.user.role == 'admin'">
+        <button class="btn btn-success" flex>
+            <i ng-hide="variableValue" class="fa fa-file-image-o"></i><span ng-hide="variableValue" >&nbsp;&nbsp;Add Video</span>
+            <i ng-show="variableValue" class="fa fa-cog"></i><span ng-show="variableValue" >&nbsp;&nbsp;Change Video</span>
+            <input id="cardTutorial-video"  type="file" class="fileUploadSideBar" onchange="angular.element(document.getElementById('cardsController')).scope().uploadTutorial();" ng-disabled = "card.cardStatus === 'Ready for Team Review'">
+        </button>
+        <!-- Progress Bar -->
+        <div ng-if="authentication.user.role == 'admin'" class="progress" style="height: 20px;  margin-bottom: 20px;  overflow: hidden;  background-color: #f5f5f5;  border-radius: 4px;  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);  margin-top: 10px;" >
+          <div class="progress-bar" role="progressbar" aria-valuenow="{{ card.cardTutorial.uploadProgress }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ card.cardTutorial.uploadProgress }}%;">
+            {{ card.cardTutorial.uploadProgress == 0 ? '' : card.cardTutorial.uploadProgress + '%' }}
+          </div>
+        </div>
+    </form>    
+  </div>
+  <div class="form-group">
+    <input type="checkbox" name="grid" value="Bike">Display Background Grid<br> 
+  </div>
+  <div class="form-group">
+    <fieldset>
+
+        <div class="">            
+          <table class="table table-hover">
+            <thead>
+              <th>Image</th>
+              <th>Notes</th>
+             <!-- <th ng-if="authentication.user.role == 'admin'">Edit</th> -->
+            </thead>
+            <tr data-ng-repeat="imagedata in card.images"> 
+              <td>
+                <div class="fileinput" ng-class="{'fileinput-exists': imagedata.url!='', 'fileinput-new': imagedata.url==''}" data-provides="fileinput">
+                  <div class="fileinput-new thumbnail" style="width: 200px; height: 150px;">
+                    <img data-src="holder.js/100%x100%" alt="...">
+                  </div>
+                  <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 200px; max-height: 150px;">
+                    <img ng-src="{{ imagedata.url }}" alt="..." />
+                  </div>
+                  <div ng-if="authentication.user.role == 'admin'">
+                    <span class="btn btn-primary btn-embossed btn-file">
+                        <span class="fileinput-new"><span class="fui-image"></span>  Select image</span>
+                        <span class="fileinput-exists"><span class="fui-gear"></span>  Change</span>
+                        <input id="imageFiles-{{$index}}" type="file" name="file" onchange="angular.element(document.getElementById('cardsController')).scope().upload(angular.element(this).scope().$index);" ng-click="clicked_index = $index" ng-disabled = "card.cardStatus === 'Ready for Team Review'" />
+                      </span>
+                  </div>
+
+
+                  <!-- Progress Bar -->
+                  <div ng-if="authentication.user.role == 'admin'" class="progress" style="height: 20px;  margin-bottom: 20px;  overflow: hidden;  background-color: #f5f5f5;  border-radius: 4px;  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .1);  margin-top: 10px;" >
+                    <div class="progress-bar" role="progressbar" aria-valuenow="{{ imagedata.uploadProgress }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ imagedata.uploadProgress }}%;">
+                      {{ imagedata.uploadProgress == 0 ? '' : imagedata.uploadProgress + '%' }}
+                    </div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <input type="text" data-ng-model="imagedata.note" id="name" class="form-control" placeholder="Notes" required ng-disabled="authentication.user.role != 'admin'" ng-if="authentication.user.role == 'admin'">
+                <p ng-if="authentication.user.role != 'admin'" >{{imagedata.note}}</p>
+<!--               </td>
+            <td ng-if="authentication.user.role == 'admin'">
+-->
+              <br />
+              <a class="btn btn-danger" ng-click="removeImageAtIndex($index)" ng-if="authentication.user.role == 'admin'" ng-disabled = "card.cardStatus === 'Ready for Team Review'">
+                <i class="fa fa-trash-o"></i>
+              </a>
+              <a class="btn btn-primary" ng-class="{'btn-success' : $index == card.activeImage}" ng-click="setActiveImage($index)" ng-disabled = "card.cardStatus === 'Ready for Team Review'">
+                View In ArtBoard
+              </a>
+            </td>
+          </tr>
+          <tr ng-if="authentication.user.role == 'admin'">
+            <td></td>
+            <td>
+              <button type="button" class="btn btn-success pull-right btn-lg" ng-click="addNewImage()" ng-disabled = "card.cardStatus === 'Ready for Team Review'">Add New</button>
+            </td>
+          </tr>
+      </table>
+      </div>
+    </fieldset>
+  </div>
+      
+</div>
+
+
+
+
+ <!--  START CODE TAB -->
+    <div role="tabpanel" class="tab-pane " id="settings">
+      <div class="form-group">
+          <label class="control-label" for="name">Name</label>
+          <div class="controls">
+              <input type="text" data-ng-model="card.name" id="name" class="form-control" placeholder="Name" required>
+          </div>          
+      </div>
+
+      <div class="form-group">
+          <label class="control-label" for="name">Card URL</label>
+          <div class="controls">
+              <input type="text" data-ng-model="card.url" id="url" class="form-control" placeholder="URL" required>
+          </div>          
+      </div>
+
+      <div class="form-group">
+        <a ng-href="/cards/json/{{getClientURL()}}" class="btn pull-right btn-nav btn-success" target="_blank">link to JSON</a>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label" for="client">Client</label>
+        <div class="controls">            
+          <select ng-options="each.companyName as each.companyName for each in clients" ng-model="card.client" style="color:black;" class="form-control" ng-change="findClient();"></select>
+        </div>
+      </div>
+
+      <div class="table-responsive form-group">
+	      <input type="text" class="form-control input-sm" name="name"  size="10" ng-model="newcontact.name" placeholder="Name"/>
+	      <input type="text" class="form-control input-sm" name="shortcode" size="10" ng-model="newcontact.shortCode" placeholder="Shortcode"/>
+	      <select ng-init="newcontact.kind = kinds[0]" class="form-control" ng-model="newcontact.kind" ng-options="kind for kind in kinds"></select>
+	      <input type="text" class="form-control input-sm" name="value" size="10" ng-model="newcontact.value" placeholder="Values"/>
+	      <input type="hidden" ng-model="newcontact.id" />
+	      <input type="button" value="Save" ng-click="saveContact(newcontact)" class="btn btn-primary" ng-disabled = "card.cardStatus === 'Ready for Team Review'"/></td>
+	      <input type="button" value="Clear" ng-click="newcontact={};editableVar=undefined" class="btn btn-danger" ng-disabled = "card.cardStatus === 'Ready for Team Review'"/></td>
+          <table class="table table-bordered">
+          <thead>
+              <tr style="text-align: center; border-bottom: 1px solid white">
+                  <td style="max-width: 70px;padding-left: 0;padding-right: 0;margin: 0;">Name</td>
+                  <td style="max-width: 70px;padding-left: 0;padding-right: 0;margin: 0;">Short</td>
+                  <td style="max-width: 80px;padding-left: 0;padding-right: 0;margin: 0;">Kind</td>
+                  <td style="max-width: 180px;padding-left: 0;padding-right: 0;margin: 0;">Value</td>
+                  <td style="max-width: 100px;padding-left: 0;padding-right: 0;margin: 0;"><i style="color:white" class="fa fa-cogs fa-lg"></i></td>
+              </tr>
+              <tr ng-repeat="variable in card.variables track by $index" style="font-size:15px; height: 35px;white-space: normal">
+                  <td  style="max-width: 70px;padding-left: 0;padding-right: 0;margin: 0;">{{ variable.name }}     </td>
+                  <td  style="max-width: 70px;padding-left: 0;padding-right: 0;margin: 0;">{{ variable.shortCode }}</td>
+                  <td  style="max-width: 80px;padding-left: 0;padding-right: 0;margin: 0;">{{ variable.kind }}     </td>
+                  <td  style="max-width: 180px;padding-left: 0;padding-right: 0;margin: 0;" ng-if="variable.kind==='Dropdown'"><span ng-repeat="var in variable.value track by $index">{{ var }}<span ng-if="$index!==variable.value.length -1">,&nbsp</span></span></td>
+                  <td  style="max-width: 180px;padding-left: 0;padding-right: 0;margin: 0;" ng-if="variable.kind!=='Dropdown'">{{ variable.value }}</td>
+                  <td  style="max-width: 100px;padding-left: 0;padding-right: 0;margin: 0;text-align: right"  >
+                    <div ng-if = "card.cardStatus !== 'Ready for Team Review'" >
+			              <a ng-click="edit(variable)"><i style="color:white" class="fa fa-pencil-square-o fa-lg"></i></a> | <a style="color:white" ng-click="delete(variable)" ><i style="color:red;" class="fa fa-trash-o fa-lg"></i></a> 
+                    </div>
+		              </td>
+              </tr>
+          </thead>
+      </table>
+</div>
+
+  <!-- <div class="form-group">
+    <input type="button" value="Test Variables" ng-click="testVariables()" class="btn btn-primary" />
+  </div> -->
+
+    </div>
+
+    <!-- END Settings Tab -->
+
+    <!-- Notes Tab -->
+      <div role="tabpanel" class="tab-pane" id="notes">
+        <div class="form-group">
+            <label class="control-label" for="notes">Notes</label>
+            <div class="controls">
+                <textarea data-ng-model="card.notes" id="notes" rows="7" class="form-control" placeholder="Notes"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+         <table class="table client-variables">
+              <thead>
+                <tr>
+                  <td><b>Kind</b></td>
+                  <td><b>Variable</b></td>
+                  <td><b>Value</b></td>
+                  <td><b>Preview</b></td>
+                </tr>
+              </thead>
+
+              <!-- RESULTS -->
+              <tbody >
+                <tr ng-repeat="variable in client.variables">
+                  <td>{{variable.kind}}</td>
+                  <td>{{variable.variable}}</td>
+                  <td>{{getFileName(variable.value)}}</td>                       
+                  <td>
+                      <span class="color-sample" style="background-color: {{variable.value}};" ng-if="variable.kind == 'Color'"></span>
+                      <!-- commented by Patrick
+                      <span class="size-sample" style="font-size: {{variable.value}};" ng-if="variable.kind == 'Size'">Demo</span>
+                      -->
+                      <span class="font-sample" style="font-family: {{variable.value}};" ng-if="variable.kind == 'Font'">Demo</span>
+                      <img class="img-sample" ng-src="{{variable.value}}" ng-if="variable.kind == 'File' || variable.kind == 'Video'"/>
+                  </td>                        
+                </tr>
+              </tbody>
+          </table>
+        </div>
+      </div>
+    <!-- END Notes Tab -->
+
+    <!-- START Comments Tab -->
+    <div role="tabpanel" class="tab-pane" id="comments">      
+       <!--  <div class="col-md-6"> -->
+        <div class="widget-area no-padding blank">
+          <table class="table table-hover">
+              <thead>
+              <tr>
+                <th>Username</th>
+                <th>Comment</th>
+                <th>Created on</th>
+                <th>Edit</th>
+              </tr>
+              </thead>
+              <tr data-ng-repeat="commentItem in card.comments"> 
+                <td>{{commentItem.displayName}}</td>
+                <td>{{commentItem.comment}}</td>
+                <td>{{commentItem.created | date:'mediumDate' }}</td>
+                <td>
+                  <a class="btn btn-danger" data-ng-click="removeCommentAtIndex($index);" data-ng-show="commentItem.user == authentication.user.username">
+                  <i class="fa fa-trash-o"></i>
+                </a>
+                </td>
+              </tr>
+          </table>
+          <div class="status-upload">
+            <form name="addCommentForm"  novalidate> <!-- data-ng-submit="addComment()" -->
+            <div class="form-group">
+              <textarea class="form-control" row="4" placeholder="What are you doing right now?" data-ng-model="newComment.comment" required></textarea>
+              </div>
+              <button class="btn btn-success green" ng-disabled="addCommentForm.$invalid" ng-click="addComment();"><i class="fa fa-share"></i> Comment</button>
+            </form>
+          </div><!-- Status Upload  -->
+        </div><!-- Widget Area -->
+      <!-- </div> -->
+          
+      </div>
+      <!-- END Comments Tab -->
+
+      <!-- Test Card Variables Tab -->
+    <div role="tabpanel" class="tab-pane" id="test_variables">
+      <!-- <div id="mainPB">
+        <div id="optionsMenu"> -->
+          <span class="editCard">
+            <!--  <i class="fa fa-times" onclick="$('.sidebar .tab-content').removeClass('hidden'); $('.sidebar .editCard').addClass('hidden');"></i>
+            <h3>Test Card Variables</h3> -->
+
+            <ul id="cardOptions">
+
+              <!-- <div testbar=""></div> -->
+
+            </ul>
+
+          </span>
+       <!--  </div>
+      </div> -->
+    </div>
+    <!-- END Test Card Variables Tab -->
+
+    </div>
+    
+
+    
+
+
+
+
+</div>
+
+
+  
+
+
+<script>
+$('#myTab a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})
+</script>
+  </form>
+</div>
+
+    </div>
+  <!-- START card edit previwe -->
+  <div class="card_edit_preview">
+    <div class="toolbar" ng-init="artboardViewMode = 'default';">
+        <button type="button" ng-model="styleOne" class="navbar-btn btn btn-sm " ng-click=" artboardViewMode = 'iphone5'; setIframeSize(shrink); " ng-class="{ 'btn-primary': artboardViewMode == 'iphone5'}">iphone 5</button>
+        <button type="button" ng-model="styleOne" class="navbar-btn btn btn-sm " ng-click=" artboardViewMode = 'iphone6'; setIframeSize(shrink); " ng-class="{ 'btn-primary': artboardViewMode == 'iphone6'}">iphone 6</button>
+        <button type="button" ng-model="styleOne" class="navbar-btn btn btn-sm " ng-click=" artboardViewMode = 'iphone6s'; setIframeSize(shrink); " ng-class="{ 'btn-primary': artboardViewMode == 'iphone6s'}">iphone 6 Plus</button>
+
+        <button type="button" class="navbar-btn btn btn-sm " ng-click=" artboardViewMode = 'ipad_port'; setIframeSize(shrink); " ng-class="{ 'btn-primary': artboardViewMode == 'ipad_port'}">iPad Portrait</button>
+        <button type="button" class="navbar-btn btn btn-sm" ng-click=" artboardViewMode = 'ipad_land'; setIframeSize(shrink); " ng-class="{ 'btn-primary': artboardViewMode == 'ipad_land'}">iPad Landscape</button>
+
+        <button type="button" class="navbar-btn btn btn-sm" ng-click=" artboardViewMode = 'desktop';  setIframeSize(shrink); " ng-class="{ 'btn-primary': artboardViewMode == 'desktop'}">Desktop</button>
+        <button type="button" class="navbar-btn btn btn-sm" ng-click=" artboardViewMode = 'default';  setIframeSize(shrink); " ng-class="{ 'btn-primary': artboardViewMode == 'default'}">Full Width</button>
+        
+
+    	  <div class="btn-group">
+    		  <button data-toggle="dropdown" class="navbar-btn btn btn-sm btn-primary dropdown-toggle" type="button">Background Color <span class="caret"></span></button>
+    		  <ul role="menu" class="dropdown-menu">
+    		    <li><a ng-click="arboardBackground = '#262721';">Dark</a>
+    		    <li><a ng-click="arboardBackground = '#F7F7F7';">Light</a>
+    		  </ul>
+    	  </div>
+
+        <div class="btn-group">
+          <button data-toggle="dropdown" class="navbar-btn btn btn-sm btn-primary dropdown-toggle" type="button">Zoom<span class="caret"></span></button>
+          <ul role="menu" class="dropdown-menu">
+            <li><a ng-click="setIframeSize(0.5);">50%</a>
+            <li><a ng-click="setIframeSize(0.75);">75%</a>
+            <li><a ng-click="setIframeSize(1);">100%</a>
+          </ul>
+        </div><!-- 
+
+        <label style="color: white; "><input type="checkbox" ng-model="shrink" ng-true-value="'0.75'" ng-false-value="'1'" ng-change="setIframeSize();" />Shrink to 75%</label> -->
+
+	<button type="button" class="navbar-btn btn btn-success btn-sm" style="font-size:15px; margin-left: 80px;" ng-click="openReadyForTeamReviewModal()" ng-if="card.cardStatus!=='Ready for Team Review'">Submit for review</button>
+	<button type="button" class="navbar-btn btn btn-success btn-sm" style="font-size:15px; margin-left: 80px;" ng-click="updateStatus(card, 'In Progress')" ng-if="card.cardStatus==='Ready for Team Review'">Continue editing</button>
+
+    </div>
+
+    <div class="background" style="background: {{arboardBackground}};">
+
+      <div class="artboard "  id="grid"  ng-class="{iframe_wrap_iphone5: artboardViewMode == 'iphone5', iframe_wrap_iphone6: artboardViewMode == 'iphone6', iframe_wrap_iphone6s: artboardViewMode == 'iphone6s',iframe_wrap_ipad_port: artboardViewMode == 'ipad_port', iframe_wrap_ipad_land: artboardViewMode == 'ipad_land' && shrink == '1', iframe_wrap_ipad_land_shrink: artboardViewMode == 'ipad_land' && shrink == '0.75', iframe_wrap_web_browser: artboardViewMode == 'desktop' && shrink == '1', iframe_wrap_web_browser_shrink: artboardViewMode == 'desktop' && shrink == '0.75', iframe_wrap_ipad_land_shrink_50: artboardViewMode == 'ipad_land' && shrink == '0.5', iframe_wrap_web_browser_shrink_50: artboardViewMode == 'desktop' && shrink == '0.5'}">
+
+        <iframe id="card_iframe" class="iframe_view_card" ng-src="/modules/cards/views/previewiframe.html" sandbox="allow-same-origin allow-scripts" frameborder=0 ALLOWTRANSPARENCY="true" ng-cloak directive-load="findOne();" ng-class="{'iframe_ipad_land_shrint': shrink == '0.75' && artboardViewMode == 'ipad_land', 'iframe_view_card_shrink': shrink == '0.75' && ( artboardViewMode == 'desktop' || artboardViewMode == 'default'), 'iframe_ipad_land_shrint_50': shrink == '0.5' && artboardViewMode == 'ipad_land', 'iframe_view_card_shrink_50': shrink == '0.5' && ( artboardViewMode == 'desktop' || artboardViewMode == 'default')}" style="width:{{artboardWidth}}; height:{{artboardHeight}}"></iframe><!-- directive-load="loadedIframe();"  -->
+
+      </div> <!-- END artboard -->
+      <img id="artwork" ng-src="{{card.images[card.activeImage].url}}">
+    </div><!-- END artboard -->
+  </div>
+  <!-- END card_edit_preview -->
+
+	<custom-modal title="'Change card status'" text="'Are you sure you want set card status to: Ready for Team Review? All editing features will be disabled.'" bg="'#6FC58B'" name="'ReadyForTeamReviewModal'" button="'Change status'" action="updateStatus(card,'Ready for Team Review')"></custom-modal>
+
+  <custom-modal title="'Invalid shortcode name'" text="'Please, use valid shortcode name.'" bg="'#f5633a'" name="'validshortcode'"></custom-modal>
+
+  <div class="modal fade" id="idleModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header" style="background-color:grey;">
+          <h2 class="modal-title">"Are you still working here?"</h2>
+        </div>
+        <div class="modal-body" idle-countdown="countdown" ng-init="countdown = 5;" >
+          <p>Are you still working on this? If not, this card will automatically save and close in {{ countdown }} seconds.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-danger btn-lg" ng-click="idleModalAction()">YES</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div ng-show="!isIframe.loaded">
+  <i style="position: absolute;top: 400px;left: 900px; color:#2196F3;font-size:50px;z-index:1" class="fa fa-spinner fa-pulse fa-2x"></i>
+  <p style="position: absolute;left: 877px;top: 455px; color:#2196F3">Loading Page...</p>
+</div>
+
+</section>
+<script>
+
+$('#desktop').click(function(){
+    $('.card-preview').addClass('desktop');
+    $('.card-preview').removeClass('mobile');
+
+});
+$('#mobile').click(function(){
+    $('.card-preview').addClass('mobile');
+    $('.card-preview').removeClass('desktop');
+
+});
+
+</script>
+
+

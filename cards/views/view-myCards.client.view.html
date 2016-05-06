@@ -1,0 +1,53 @@
+<section class="container" data-ng-init="myCard.init();">
+
+	<div class="row">
+		<h3 class="col-md-10">Cards assigned to you</h3>
+		
+	</div>
+	<!-- <h1>{{myCard.user.role}}</h1>	 -->
+	<div class="form-group card-search-filter">
+        <div class="controls" ng-if="myCard.user.role==='admin'">
+        	<div>
+        		<multiselect data-ng-model="myCard.searchFilter.clients" options="client.companyName as client.companyName for client in myCard.clients" checkboxes="true" multiple="true" action="" header="Clients"></multiselect>
+        	</div>
+        	<div>
+        		<multiselect data-ng-model="myCard.searchFilter.orders" options="order as order.name for order in myCard.allOrders" checkboxes="true" multiple="true" action="" header="Orders"></multiselect>
+        	</div>
+        	<div>
+        		<multiselect data-ng-model="myCard.searchFilter.status" options="status as status for status in myCard.allStatuses" checkboxes="true" multiple="true" action="" header="Status"></multiselect>
+        	</div>
+        	<div style="width:40%;">
+           		<input type="text" data-ng-model="myCard.searchFilter.name" id="searchText" class="form-control" placeholder="Search for a card" style="float: left;" > 
+           	</div>
+           	
+        </div>
+    </div>
+
+	<div class="row">
+		<p ng-if="!myCard.canEditMyCards">You dont have permissions to edit or remove cards</p>
+		<p ng-if="!myCard.canViewMyCards">You dont have permissions to view cards</p>
+		<table class="table  table-condensed" ng-if="myCard.canViewMyCards">
+			<thead>
+			<tr>
+				<th>Name</th>
+				<th>Client</th>
+				<th>Action</th>
+			</tr>
+			</thead>
+			<tbody>
+			<tr ng-if="myCard.allUserCards.length" ng-repeat="card in myCard.allUserCards | myCardsFilter : myCard.searchFilter">
+				<td>{{card.name}}</td>
+				<td>{{card.client}}</td>
+				<td ng-if="myCard.canEditMyCards">
+					<button class="btn btn-success" ui-sref="editCard({cardId:card._id})" style="width: 48%;">Edit</button>
+					<!-- <button class="btn btn-danger" ng-click="myCard.removeClaim(card)" style="width: 48%;">Remove</button> -->
+				</td>
+				<td ng-if="!myCard.canEditMyCards">You dont have permissions to edit or remove cards</td>
+			</tr>
+			<tr ng-if="!myCard.allUserCards.length"><td colspan="3"><p ng-if="!account.allUserCards.length">You dont have claimed cards, or cards assigned to you. <span ng-if="myCard.canClaimCards">Click <a ui-sref="listCards">here</a> to claim one.</span></p></td></tr>
+			</tbody>
+		</table>
+	</div>
+</section>
+
+

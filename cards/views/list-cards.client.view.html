@@ -1,0 +1,105 @@
+<section id="listCards" class="md container" data-ng-init="vm.onload();" ><!-- data-ng-init="find(); findClients();" -->
+
+	<h1>Cards</h1>
+	<div class="form-group card-search-filter">
+        <div class="controls" ng-if="vm.authentication.user.role==='admin'">
+        	<div>
+        		<multiselect data-ng-model="vm.searchFilter.clients" options="client as client.companyName for client in vm.clients | orderBy: 'companyName'" checkboxes="true" multiple="true" action="" header="Clients" selected="{{vm.selectedClients}}" ></multiselect>
+        	</div>
+        	<div>
+        		<multiselect data-ng-model="vm.searchFilter.orders" options="order as order.name for order in vm.allOrders | orderBy: 'name'" checkboxes="true" multiple="true" action="" header="Orders"></multiselect>
+        	</div>
+        	<div>
+        		<multiselect data-ng-model="vm.searchFilter.users" options="user as user.displayName for user in vm.allUsers | orderBy: 'displayName'" checkboxes="true" multiple="true" action="" header="Users"></multiselect>
+        	</div>
+        	<div style="width:40%;">
+           		<input type="text" ng-model="vm.searchFilter.name" ng-model-options="{ debounce: 500 }" id="searchText" class="form-control" placeholder="Search for a card" style="float: left;" >
+           	</div>
+           	<div style="float:right;">
+            	<a ui-sref="createCard"><button type="button" class="btn btn-success pull-right btn-lg">New Card</button></a>
+            </div>
+        </div>
+    </div>
+
+    <div ng-include="'modules/cards/views/client-view.html'"></div>
+
+    <div>
+        <div id="cardsLoadingOverlay" class="busy-overlay" ng-class="{loadingDone: vm.loadingDone}">
+            <h4 class="progress-label">Loading...</h4>
+            <md-progress-linear class="md-warn" md-mode="determinate" value="{{vm.loadingProgress}}"></md-progress-linear>
+        </div>
+
+        <div ng-include="'PagerTemplate'" class="clearfix"></div>
+
+        <table class="table table-hover" ng-if="vm.cards.length && vm.authentication.user.role!=='client'">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Preview</th>
+                    <th>Title</th>
+                    <th>Client</th>
+                    <th>Card URL</th>
+                    <th ng-if="vm.authentication.user.role=='admin'" style="min-width: 200px;">Assign to</th>
+                    <th ng-if="vm.authentication.user.role=='admin'" style="min-width: 200px;">Card Status</th>
+                    <th ng-if="vm.canClaimCards">Claim</th>
+                    <th ng-if="vm.canEditCards">Edit</th>
+                    <th ng-if="vm.canEditCards">Copy</th>
+                    <th>View</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr data-ng-repeat="card in vm.cards | cardsFilter : vm.searchFilter | slicePage:vm.currentPage:vm.pageSize"><!-- | filter:searchFilter -->
+                    <td>{{(card._num || $index) + 1}}</td>
+                    <td><img class="img-responsive" width="150px" ng-src="{{card.images[0].thumbUrl || card.images[0].url}}"></td>
+                    <td>{{card.name}}</td>
+                    <td>{{card.client}}</span></td>
+                    <td>{{card.url | lowercase}}</td>
+                    <td ng-if="vm.authentication.user.role=='admin'">
+                        <multiselect data-ng-model="card.claimedBy[0]" options="user as user.displayName for user in vm.allUsers" single="true" action="vm.assignCard(card, card.claimedBy[0])"></multiselect>
+                    </td>
+                    <td ng-if="vm.authentication.user.role=='admin'">
+                        <label for="cardStatus"></label>
+                        <select class="form-control" style="position: relative;bottom: 19px;" name="cardStatus" id="cardStatus" data-ng-model="card.cardStatus" data-ng-change="vm.updateStatus(card)" ng-options="status as status for status in vm.allStatuses"></select>
+                    </td>
+                    <td ng-if="vm.canClaimCards"><button type="button" class="btn btn-default" ng-click="vm.openClaimModal(card)" ng-disabled="card.claimedBy[0]._id">Claim</button></td>
+
+                     <td ng-if="vm.canEditCards">
+                        <a class="btn btn-warning" ui-sref="editCard({cardId:card._id})"><i class="fa fa-pencil-square-o"></i></a>
+
+                    </td>
+                     <td ng-if="vm.canEditCards">
+                     <button class="btn btn-success" ng-click="vm.duplicateCard(card);"><i class="fa fa-copy"></i></button>
+                     </td>
+                    <td><a ui-sref="viewCard({cardId:card._id})"><button type="button" class="btn btn-primary">View</button> </a></td>
+                    <td><button class="btn btn-danger" ng-click="vm.openDeleteModal(card)">Delete</button></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div ng-include="'PagerTemplate'" class="clearfix"></div>
+    </div>
+        
+	<custom-modal title="'Are You Sure?'" text="'Once you claim this card, no other users will have access to this card. If no work is begun within 24 hrs, the card will be automatically made available to all developers again.'" bg="'#6FC58B'" name="'claimModal'" button="'Claim card'" action="vm.claimCard()"></custom-modal>
+    <custom-modal title="'Delete card confirmation'" text="'Are you sure you want to delete card ' + vm.selectedCard.name + '?'" bg="'#f5633a'" name="'deleteCardModal'" button="'Delete card'" action="vm.deleteCard(vm.selectedCard)"></custom-modal>
+
+    <div class="alert alert-warning text-center" data-ng-hide="!vm.cards.$resolved || vm.cards.length">
+    	No Cards yet, why don't you <a ui-sref="createCard">create one</a>?
+    </div>
+</section>
+
+<script id="PagerTemplate" type="text/ng-template">
+    <div class="page-size">
+        <span>Page Size:</span>
+        <select class="form-control" ng-model="vm.pageSize" ng-change="vm.currentPage = 0">
+            <option ng-repeat="pageSize in [15, 30, 50, 1000000]" ng-value="pageSize" ng-selected="vm.pageSize == pageSize">
+                {{pageSize >= 1000000 ? 'All' : pageSize}}
+            </option>
+        </select>
+    </div>
+
+    <ol class="pagination" ng-if="vm.pages(vm.cards).length > 1">
+        <li ng-repeat="page in vm.pages(vm.cards)" ng-class="{ active: vm.currentPage == page, disabled: $index >= vm.pages((vm.cards | cardsFilter:vm.searchFilter)).length }">
+            <a ng-click="vm.currentPage = page">{{page+1}}</a>
+        </li>
+    </ol>
+</script>
